@@ -12,11 +12,11 @@ namespace Minitwit.API.Controllers
     [ApiController]
     public class TimelineController : ControllerBase
     {
-        private readonly ITimelineRepository timelineRepository;
+        private readonly ITimelineRepository _timelineRepository;
 
         public TimelineController(ITimelineRepository timelineRepository)
         {
-            this.timelineRepository = timelineRepository;
+            _timelineRepository = timelineRepository;
         }
 
         //// GET: api/Timeline
