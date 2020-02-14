@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Minitwit.API.Controllers
@@ -10,7 +6,13 @@ namespace Minitwit.API.Controllers
     [ApiController]
     public class TimelineController : ControllerBase
     {
+        private readonly ITimelineRepository _timelineRepository;
 
+        public TimelineController(ITimelineRepository timelineRepository)
+        {
+            _timelineRepository = timelineRepository;
+        }
+        
         // GET: api/Timeline
         [HttpGet]
         public IActionResult Root()

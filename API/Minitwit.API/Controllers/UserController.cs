@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Minitwit.API.Controllers
@@ -10,6 +6,13 @@ namespace Minitwit.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUserRepository _userRepository;
+
+        public UserController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+        
         [HttpPost]
         [Route("follow")]
         public IActionResult Follow() {

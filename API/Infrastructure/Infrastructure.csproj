@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Class1.cs" />
+    <Compile Remove="Models\FollowerDto.cs" />
+    <Compile Remove="Models\MessageDto.cs" />
+    <Compile Remove="Models\UserDto.cs" />
+  </ItemGroup>
+</Project>
