@@ -7,29 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Minitwit.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        // GET: api/User
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/User
         [HttpPost]
-        public void Post([FromBody] string value)
-        {
+        [Route("follow")]
+        public IActionResult Follow() {
+            return Created("TODO", "TODO");
         }
 
+        [HttpPost]
+        [Route("unfollow")]
+        public IActionResult Unfollow() {
+            return Ok("");
+        }
     }
 }

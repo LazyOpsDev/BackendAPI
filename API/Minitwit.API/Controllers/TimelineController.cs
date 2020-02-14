@@ -7,28 +7,37 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Minitwit.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class TimelineController : ControllerBase
     {
+
         // GET: api/Timeline
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Root()
         {
-            return new string[] { "value1", "value2" };
+            return Ok("Called /");
         }
 
-        // GET: api/Timeline/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet]
+        [Route("public")]
+        public IActionResult Public()
         {
-            return "value";
+            return Ok("Called /public");
         }
 
-        // POST: api/Timeline
+        [HttpGet]
+        [Route("{username}")]
+        public IActionResult Private(string username)
+        {
+            return Ok($"Called /{username}");
+        }
+
         [HttpPost]
-        public void Post([FromBody] string value)
-        {
+        [Route("add_message")]
+        public IActionResult AddMessage(string tweet) {
+            return Created("TODO", "TODO");
         }
+
+
     }
 }
