@@ -19,19 +19,7 @@ namespace Minitwit.API.Controllers
             _userRepository = userRepository;
         }
 
-        //// GET: api/User
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //// GET: api/User/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        
 
         // POST: api/User
         [HttpPost]

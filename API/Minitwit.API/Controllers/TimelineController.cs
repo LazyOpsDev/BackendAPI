@@ -19,13 +19,6 @@ namespace Minitwit.API.Controllers
             _timelineRepository = timelineRepository;
         }
 
-        //// GET: api/Timeline
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
         // GET: api/Timeline/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
