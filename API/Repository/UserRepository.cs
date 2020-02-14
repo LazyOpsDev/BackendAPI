@@ -1,5 +1,4 @@
-﻿using System;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 
 namespace Repository
 {
