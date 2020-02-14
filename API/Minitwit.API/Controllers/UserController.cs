@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Minitwit.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -13,14 +12,17 @@ namespace Minitwit.API.Controllers
         {
             _userRepository = userRepository;
         }
-
         
-
-        // POST: api/User
         [HttpPost]
-        public void Post([FromBody] string value)
-        {
+        [Route("follow")]
+        public IActionResult Follow() {
+            return Created("TODO", "TODO");
         }
 
+        [HttpPost]
+        [Route("unfollow")]
+        public IActionResult Unfollow() {
+            return Ok("");
+        }
     }
 }
