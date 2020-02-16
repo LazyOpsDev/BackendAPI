@@ -1,8 +1,10 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Minitwit.API.Controllers
 {
+    [Route("/")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -14,14 +16,16 @@ namespace Minitwit.API.Controllers
         }
         
         [HttpPost]
-        [Route("follow")]
-        public IActionResult Follow() {
+        [Route("{id}/follow")]
+        public IActionResult Follow(Guid id) {
+            //follow user with id
             return Created("TODO", "TODO");
         }
 
         [HttpPost]
-        [Route("unfollow")]
-        public IActionResult Unfollow() {
+        [Route("{id}/unfollow")]
+        public IActionResult Unfollow(Guid id) {
+            //Unfollow user
             return Ok("");
         }
     }
