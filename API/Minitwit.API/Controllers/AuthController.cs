@@ -8,6 +8,7 @@ using Minitwit.Models;
 
 namespace Minitwit.API.Controllers
 {
+    [Route("/")]
     [ApiController]
     public class AuthController : ControllerBase
     {
