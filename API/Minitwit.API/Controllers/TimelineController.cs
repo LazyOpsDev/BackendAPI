@@ -1,5 +1,8 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Minitwit.API.Util;
+using System;
+using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
 {
@@ -16,34 +19,45 @@ namespace Minitwit.API.Controllers
         
         // GET: api/Timeline
         [HttpGet]
-        public IActionResult Root()
+        public async Task<IActionResult> Root()
         {
             // If not logged in redirect to public,
+            if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+                return await Public();
+
             // if logged in get timeline consisting of messages the user follows
-            return Ok("Called /");
+            // TODO get logged in user
+            return new OkObjectResult(await _timelineRepository.GetTimelineForLoggedInUser(UserId));
         }
 
         [HttpGet]
         [Route("public")]
-        public IActionResult Public()
+        public async Task<IActionResult> Public()
         {
             //Return all messages by all users
-            return Ok("Called /public");
+            return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
         }
 
         [HttpGet]
         [Route("{username}")]
-        public IActionResult Private(string username)
+        public async Task<IActionResult> UserTimeline(string username)
         {
             //Return messages by a single user
-            return Ok($"Called /{username}");
+            return new OkObjectResult(await _timelineRepository.GetUserTimeline(username));
         }
 
         [HttpPost]
         [Route("add_message")]
-        public IActionResult AddMessage(string tweet) {
+        public async Task<IActionResult> AddMessage(string tweet) {
             //Create a new message from logged in user
-            return Created("TODO", "TODO");
+            //TODO if user not logged in
+            if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+                return Unauthorized();
+
+            //TODO get logged in user
+            await _timelineRepository.PostMessage(UserId, tweet);
+            
+            return await Root();
         }
 
 
