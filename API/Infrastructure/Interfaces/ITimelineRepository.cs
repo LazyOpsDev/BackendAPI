@@ -11,7 +11,7 @@ namespace Infrastructure.Interfaces
         Task<IEnumerable<Message>> GetTimelineForLoggedInUser(Guid uid);
         Task<IEnumerable<Message>> GetUserTimeline(string username);
 
-        Task PostMessage(Guid userId, string message);
+        Task PostMessage(string username, string message);
 
     }
 }

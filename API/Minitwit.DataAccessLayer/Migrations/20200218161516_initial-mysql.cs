@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Minitwit.DataAccessLayer.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initialmysql : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -54,14 +54,15 @@ namespace Minitwit.DataAccessLayer.Migrations
                     Content = table.Column<string>(nullable: true),
                     PublishedTime = table.Column<DateTime>(nullable: false),
                     Flagged = table.Column<bool>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: true)
+                    TestKey = table.Column<Guid>(nullable: true),
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.MessageId);
                     table.ForeignKey(
-                        name: "FK_Messages_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Messages_Users_TestKey",
+                        column: x => x.TestKey,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
@@ -78,9 +79,9 @@ namespace Minitwit.DataAccessLayer.Migrations
                 column: "SelfUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_UserId",
+                name: "IX_Messages_TestKey",
                 table: "Messages",
-                column: "UserId");
+                column: "TestKey");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
