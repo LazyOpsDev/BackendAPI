@@ -47,19 +47,47 @@ namespace Minitwit.API.Controllers
         }
 
         [HttpPost]
-        [Route("add_message")]
-        public async Task<IActionResult> AddMessage(string tweet) {
+        [HttpGet]
+        [Route("msgs/{username}")]
+        public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username) {
             //Create a new message from logged in user
             //TODO if user not logged in
-            if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-                return Unauthorized();
+            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+            //    return Unauthorized();
 
-            //TODO get logged in user
-            await _timelineRepository.PostMessage(UserId, tweet);
+            switch (Request.Method)
+            {
+                case "POST":
+                    await _timelineRepository.PostMessage(username, msg.content);
+                    return NoContent();
+                    break;
+                case "GET":
+                    await _timelineRepository.GetUserTimeline(username);
+                    Console.WriteLine();
+                    break;
+            }
+
             
-            return await Root();
+            return NoContent();
         }
 
+        //[HttpGet]
+        //[Route("msgs/{username}")]
+        //public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username)
+        //{
+        //    //Create a new message from logged in user
+        //    //TODO if user not logged in
+        //    //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+        //    //    return Unauthorized();
 
+        //    await _timelineRepository.PostMessage(username, msg.content);
+
+        //    return NoContent();
+        //}
+
+        public class MessageCreate
+        {
+            public string content { get; set; }
+        }
     }
 }

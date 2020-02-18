@@ -13,7 +13,7 @@ namespace Repository
     {
         public async Task<IEnumerable<Message>> GetPublicTimeline()
         {
-            return new Message[] { };
+            //return new Message[] { };
             using(var ctx = new CustomDbContext())
             {
                 return await ctx.Messages.Where(m => !m.Flagged).ToListAsync();
@@ -22,8 +22,7 @@ namespace Repository
 
         public async Task<IEnumerable<Message>> GetTimelineForLoggedInUser(Guid userId)
         {
-            return new Message[] { };
-
+            //return new Message[] { };
             using (var ctx = new CustomDbContext())
             {
                 return await ctx.Messages.
@@ -38,20 +37,18 @@ namespace Repository
 
         public async Task<IEnumerable<Message>> GetUserTimeline(string username)
         {
-            return new Message[] { };
-
+            //return new Message[] { };
             using (var ctx = new CustomDbContext())
             {
                 return await ctx.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToListAsync();
             }
         }
 
-        public async Task PostMessage(Guid userId, string message)
+        public async Task PostMessage(string username, string message)
         {
-            return;
             using (var ctx = new CustomDbContext())
             {
-                var user = await ctx.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                var user = await ctx.Users.FirstOrDefaultAsync(u => u.Username == username);
                 if (user == null)
                     throw new ArgumentException();
                 var msg = new Message
@@ -59,7 +56,7 @@ namespace Repository
                     Content = message,
                     Flagged = false,
                     User = user,
-                    UserId = userId,
+                    UserId = user.UserId,
                     PublishedTime = DateTime.Now,
                 };
                 ctx.Messages.Add(msg);
