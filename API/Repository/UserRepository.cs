@@ -13,7 +13,7 @@ namespace Repository
     {
         public async Task<bool> FollowUser(string username, string follows)
         {
-            //return true;
+            return true;
             using (var ctx = new CustomDbContext())
             {
                 var userWho = await ctx.Users.FirstOrDefaultAsync(u => u.Username == username);
@@ -33,7 +33,7 @@ namespace Repository
 
         public async Task<Guid> Login(LoginModel user)
         {
-            //return Guid.Empty;
+            return Guid.Empty;
             using (var ctx = new CustomDbContext())
             {
                 var users = await ctx.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
@@ -49,7 +49,7 @@ namespace Repository
 
         public async Task<Guid> RegisterUser(RegisterModel user)
         {
-            //return Guid.Empty;
+            return Guid.Empty;
             using (var ctx = new CustomDbContext())
             {
                 var users = ctx.Users.Where(u => u.Username == user.username);
@@ -77,7 +77,7 @@ namespace Repository
 
         public async Task<bool> UnfollowUser(string username, string unfollows)
         {
-            //return true;
+            return true;
             using (var ctx = new CustomDbContext())
             {
                 var usr = ctx.Users.FirstOrDefault(u => u.Username == username);
