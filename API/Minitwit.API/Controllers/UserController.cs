@@ -17,7 +17,7 @@ namespace Minitwit.API.Controllers
         {
             _userRepository = userRepository;
         }
-        
+
         //[HttpPost]
         //[Route("{id}/follow")]
         //public async Task<IActionResult> Follow(string id, int i) {
@@ -50,18 +50,23 @@ namespace Minitwit.API.Controllers
 
         [HttpPost]
         [Route("fllws/{username}")]
-        public async Task<IActionResult> Follow([FromBody]followModel follow, string username)
+        public async Task<IActionResult> fllws([FromBody]followModel follow, string username)
         {
             //TODO maybe auth
             //If user not logged in 
             //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
             //    return Unauthorized();
 
-            if (string.IsNullOrEmpty(follow.follow) && !await _userRepository.UnfollowUser(Guid.NewGuid(), username))
-                return NotFound();
-            else if(string.IsNullOrEmpty(follow.follow) && !await _userRepository.FollowUser(Guid.NewGuid(), username))
-                return NotFound();
-
+            if (string.IsNullOrEmpty(follow.follow))
+            {
+                if (!await _userRepository.UnfollowUser(username, follow.unfollow))
+                    return NoContent();
+            }
+            else if (string.IsNullOrEmpty(follow.unfollow))
+            {
+                if (!await _userRepository.FollowUser(username, follow.follow))
+                    return NotFound();
+            }
             return NoContent();
         }
 
@@ -85,9 +90,5 @@ namespace Minitwit.API.Controllers
     {
         public string follow { get; set; }
         public string unfollow { get; set; }
-    }
-
-    public class unFollowModel
-    {
     }
 }

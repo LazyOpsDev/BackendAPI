@@ -11,12 +11,12 @@ namespace Repository
 {
     public class UserRepository : IUserRepository
     {
-        public async Task<bool> FollowUser(Guid userId, string follows)
+        public async Task<bool> FollowUser(string username, string follows)
         {
             //return true;
             using (var ctx = new CustomDbContext())
             {
-                var userWho = await ctx.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                var userWho = await ctx.Users.FirstOrDefaultAsync(u => u.Username == username);
                 if (userWho == null)
                     throw new ArgumentException();
                 
@@ -75,19 +75,23 @@ namespace Repository
             return Guid.NewGuid();
         }
 
-        public async Task<bool> UnfollowUser(Guid userId, string unfollows)
+        public async Task<bool> UnfollowUser(string username, string unfollows)
         {
             //return true;
             using (var ctx = new CustomDbContext())
             {
-                var follower = await ctx.Followers
+                var usr = ctx.Users.FirstOrDefault(u => u.Username == username);
+                var unflws = ctx.Users.FirstOrDefault(u => u.Username == unfollows);
+
+                var followers = await ctx.Followers
                     .Include(f => f.Self)
                     .Include(f => f.Following)
-                    .SingleOrDefaultAsync(f => f.Self.UserId == userId && f.Following.Username == unfollows);
-                if (follower == null)
+                    .FirstOrDefaultAsync(f => f.Self.Username == username && f.Following.Username == unfollows);
+
+                if (followers == null)
                     return false;
 
-                ctx.Followers.Remove(follower);
+                ctx.Followers.Remove(followers);
 
                 return await ctx.SaveChangesAsync() != 0;
             }
