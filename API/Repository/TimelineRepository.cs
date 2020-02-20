@@ -11,22 +11,24 @@ namespace Repository
 {
     public class TimelineRepository : ITimelineRepository
     {
-        private readonly CustomDbContext _context;
+        //private readonly CustomDbContext _context;
 
-        public TimelineRepository(CustomDbContext context)
-        {
-            _context = context;
-        }
+        //public TimelineRepository(CustomDbContext context)
+        //{
+        //    _context = context;
+        //}
 
         public async Task<IEnumerable<Message>> GetPublicTimeline()
         {
             //return new Message[] { };
-            return await _context.Messages.Where(m => !m.Flagged).ToListAsync();
+            using (var _context = new CustomDbContext())
+                return await _context.Messages.Where(m => !m.Flagged).ToListAsync();
         }
 
         public async Task<IEnumerable<Message>> GetTimelineForLoggedInUser(Guid userId)
         {
-            return await _context.Messages.
+            using (var _context = new CustomDbContext())
+                return await _context.Messages.
             Join(_context.Followers,
             m => m.User.UserId,
             f => f.Self.UserId,
@@ -37,24 +39,28 @@ namespace Repository
 
         public async Task<IEnumerable<Message>> GetUserTimeline(string username)
         {
-            return await _context.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToListAsync();
+            using (var _context = new CustomDbContext())
+                return await _context.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToListAsync();
         }
 
         public async Task PostMessage(string username, string message)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null)
-                throw new ArgumentException();
-            var msg = new Message
+            using(var _context = new CustomDbContext())
             {
-                Content = message,
-                Flagged = false,
-                User = user,
-                UserId = user.UserId,
-                PublishedTime = DateTime.Now,
-            };
-            _context.Messages.Add(msg);
-            await _context.SaveChangesAsync();
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+                if (user == null)
+                    throw new ArgumentException();
+                var msg = new Message();
+
+                msg.Content = message;
+                msg.Flagged = false;
+                msg.User = user;
+                msg.UserId = user.UserId;
+                msg.PublishedTime = DateTime.Now;
+
+                _context.Messages.Add(msg);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

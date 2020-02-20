@@ -22,5 +22,16 @@ namespace Minitwit.DataAccessLayer
         {
             
         }
+
+        public CustomDbContext()
+        {
+
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connString = @"Server=db;Database=minitwit;Uid=user;Pwd=P4sSw0rd";
+            optionsBuilder.UseMySql(connString);
+        }
     }
 }
