@@ -1,8 +1,13 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Minitwit.API.Util;
+using System;
+using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
 {
+    [Route("/")]
+    [LatestFilter]
     [ApiController]
     public class TimelineController : ControllerBase
     {
@@ -14,32 +19,60 @@ namespace Minitwit.API.Controllers
         }
         
         // GET: api/Timeline
-        [HttpGet]
-        public IActionResult Root()
-        {
-            return Ok("Called /");
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> Root()
+        //{
+        //    // If not logged in redirect to public,
+        //    //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+        //    //    return await Public();
+
+        //    // if logged in get timeline consisting of messages the user follows
+        //    // TODO get logged in user
+        //    return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
+        //}
 
         [HttpGet]
-        [Route("public")]
-        public IActionResult Public()
+        [Route("/")]
+        public async Task<IActionResult> Public()
         {
-            return Ok("Called /public");
+            //Return all messages by all users
+            return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
         }
 
         [HttpGet]
         [Route("{username}")]
-        public IActionResult Private(string username)
+        public async Task<IActionResult> UserTimeline(string username)
         {
-            return Ok($"Called /{username}");
+            //Return messages by a single user
+            return new OkObjectResult(await _timelineRepository.GetUserTimeline(username));
         }
 
         [HttpPost]
-        [Route("add_message")]
-        public IActionResult AddMessage(string tweet) {
-            return Created("TODO", "TODO");
+        [HttpGet]
+        [Route("msgs/{username}")]
+        public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username) {
+            //Create a new message from logged in user
+            //TODO if user not logged in
+            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+            //    return Unauthorized();
+
+            switch (Request.Method)
+            {
+                case "POST":
+                    await _timelineRepository.PostMessage(username, msg.content);
+                    return NoContent();
+                case "GET":
+                    await _timelineRepository.GetUserTimeline(username);
+                    return NoContent();
+            }
+
+            
+            return NoContent();
         }
 
-
+        public class MessageCreate
+        {
+            public string content { get; set; }
+        }
     }
 }

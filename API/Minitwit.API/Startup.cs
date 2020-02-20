@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Infrastructure;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Minitwit.DataAccessLayer;
 using Repository;
 
 namespace Minitwit.API
@@ -20,7 +15,12 @@ namespace Minitwit.API
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -32,6 +32,7 @@ namespace Minitwit.API
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITimelineRepository, TimelineRepository>();
+            services.AddDbContext<CustomDbContext>(o => o.UseMySql(Configuration["ConnectionString"], b=>b.MigrationsAssembly("Minitwit.DataAccessLayer")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +49,7 @@ namespace Minitwit.API
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 

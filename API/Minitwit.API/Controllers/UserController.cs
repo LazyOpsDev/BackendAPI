@@ -1,8 +1,14 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Minitwit.API.Util;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
 {
+    [Route("/")]
+    [LatestFilter]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -12,17 +18,32 @@ namespace Minitwit.API.Controllers
         {
             _userRepository = userRepository;
         }
-        
-        [HttpPost]
-        [Route("follow")]
-        public IActionResult Follow() {
-            return Created("TODO", "TODO");
-        }
 
         [HttpPost]
-        [Route("unfollow")]
-        public IActionResult Unfollow() {
-            return Ok("");
+        [Route("fllws/{username}")]
+        public async Task<IActionResult> fllws([FromBody]followModel follow, string username)
+        {
+            //TODO maybe auth
+            //If user not logged in 
+            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+            //    return Unauthorized();
+
+            if (string.IsNullOrEmpty(follow.follow))
+            {
+                if (!await _userRepository.UnfollowUser(username, follow.unfollow))
+                    return NoContent();
+            }
+            else if (string.IsNullOrEmpty(follow.unfollow))
+            {
+                if (!await _userRepository.FollowUser(username, follow.follow))
+                    return NotFound();
+            }
+            return NoContent();
         }
+    }
+    public class followModel
+    {
+        public string follow { get; set; }
+        public string unfollow { get; set; }
     }
 }
