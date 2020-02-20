@@ -12,9 +12,14 @@ namespace Minitwit.DataAccessLayer
         public DbSet<Follower> Followers { get; set; }
         public DbSet<Message> Messages { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            options.UseMySql("Server=localhost;Database=minitwit;Uid=root;Pwd=hej123");                            //
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public CustomDbContext(DbContextOptions<CustomDbContext> options) : base(options)
+        {
+            
         }
     }
 }
