@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace Minitwit.API.Controllers
 {
     [Route("/")]
-    [LatestFilter]
     [ApiController]
     public class TimelineController : ControllerBase
     {
@@ -31,6 +30,7 @@ namespace Minitwit.API.Controllers
         //    return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
         //}
 
+    [LatestFilter]
         [HttpGet]
         [Route("/")]
         public async Task<IActionResult> Public()
@@ -39,6 +39,7 @@ namespace Minitwit.API.Controllers
             return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
         }
 
+    [LatestFilter]
         [HttpGet]
         [Route("{username}")]
         public async Task<IActionResult> UserTimeline(string username)
@@ -47,6 +48,7 @@ namespace Minitwit.API.Controllers
             return new OkObjectResult(await _timelineRepository.GetUserTimeline(username));
         }
 
+    [LatestFilter]
         [HttpPost]
         [HttpGet]
         [Route("msgs/{username}")]
