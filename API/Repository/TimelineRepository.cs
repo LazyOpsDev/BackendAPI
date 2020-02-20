@@ -46,6 +46,7 @@ namespace Repository
 
         public async Task PostMessage(string username, string message)
         {
+            return;
             using (var ctx = new CustomDbContext())
             {
                 var user = await ctx.Users.FirstOrDefaultAsync(u => u.Username == username);
