@@ -12,7 +12,6 @@
     <Compile Remove="Models\FollowerDto.cs" />
     <Compile Remove="Models\MessageDto.cs" />
     <Compile Remove="Models\UserDto.cs" />
-    <Compile Remove="Interfaces\ILastNumberRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Minitwit.Models\Minitwit.Models.csproj" />
