@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Minitwit.DataAccessLayer;
+using MySql.Data.MySqlClient;
 using Repository;
 
 namespace Minitwit.API
@@ -28,15 +30,20 @@ namespace Minitwit.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connString = @"Server=localhost;Database=minitwit;Uid=root;Pwd=hej123";
+            //var connString = @"Server=db;Database=minitwit;Uid=user;Pwd=P4sSw0rd";
+            WaitForDBInit(connString);
+
             services.AddControllers();
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITimelineRepository, TimelineRepository>();
-            services.AddDbContext<CustomDbContext>(o => o.UseMySql(Configuration["ConnectionString"], b=>b.MigrationsAssembly("Minitwit.DataAccessLayer")));
+            services.AddScoped<ILastNumberRepository, LastNumberRepository>();
+            services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -51,14 +58,37 @@ namespace Minitwit.API
 
             // app.UseHttpsRedirection();
 
+            context.Database.Migrate();
+
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void WaitForDBInit(string connectionString)
+        {
+            var connection = new MySqlConnection(connectionString);
+            int retries = 1;
+            while (retries < 7)
+            {
+                try
+                {
+                    Console.WriteLine("Connecting to db. Trial: {0}", retries);
+                    connection.Open();
+                    connection.Close();
+                    break;
+                }
+                catch (MySqlException)
+                {
+                    Thread.Sleep((int)Math.Pow(2, retries) * 1000);
+                    retries++;
+                }
+            }
         }
     }
 }
