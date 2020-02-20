@@ -14,3 +14,12 @@ jobs:
           dotnet-version: 3.1.100
       - name: Build with dotnet
         run: dotnet build --configuration Release **/*.sln
+      - name: Build with dotnet
+        run: dotnet publish -o '~/published' --configuration Release **/*.sln
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          # Artifact name
+          name: Files
+          # Directory containing files to upload
+          path: '~/published'
