@@ -38,6 +38,20 @@ namespace Minitwit.DataAccessLayer.Migrations
                     b.ToTable("Followers");
                 });
 
+            modelBuilder.Entity("Minitwit.Models.LatestModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("latest")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Latest");
+                });
+
             modelBuilder.Entity("Minitwit.Models.Message", b =>
                 {
                     b.Property<Guid>("MessageId")
