@@ -11,11 +11,11 @@ namespace Minitwit.API.Util
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            //var a = context.HttpContext.Request.Query["latest"].FirstOrDefault()?.ToString(); //HttpContext.Items["latest"];
-            //if (int.TryParse(a, out var latest))
-            //{
-            //    context.HttpContext.RequestServices.GetService<ILastNumberRepository>().WriteLatest(latest);
-            //}
+            var a = context.HttpContext.Request.Query["latest"].FirstOrDefault()?.ToString(); //HttpContext.Items["latest"];
+            if (int.TryParse(a, out var latest))
+            {
+                context.HttpContext.RequestServices.GetService<ILastNumberRepository>().WriteLatest(latest);
+            }
             base.OnActionExecuting(context);
         }
     }
