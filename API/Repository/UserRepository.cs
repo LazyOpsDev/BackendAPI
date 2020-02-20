@@ -49,7 +49,7 @@ namespace Repository
         {
             var users = _context.Users.Where(u => u.Username == user.username);
             if (users.Any())
-                throw new ArgumentException();
+                return Guid.Empty;
 
             var passwordHash = PasswordHandler.CreatePasswordHash(user.pwd);
 
@@ -66,7 +66,7 @@ namespace Repository
                 return usr.UserId;
             }
 
-            return Guid.NewGuid();
+            return Guid.Empty;
         }
 
         public async Task<bool> UnfollowUser(string username, string unfollows)
