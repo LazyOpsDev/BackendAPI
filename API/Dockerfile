@@ -13,5 +13,5 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=build /app ./
 EXPOSE 80:80
-CMD [ "dotnet ef database update" ]
+
 ENTRYPOINT ["dotnet", "Minitwit.API.dll"]
