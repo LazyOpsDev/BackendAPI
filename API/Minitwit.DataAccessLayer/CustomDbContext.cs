@@ -11,6 +11,7 @@ namespace Minitwit.DataAccessLayer
         public DbSet<User> Users { get; set; }
         public DbSet<Follower> Followers { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<LatestModel> Latest { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
