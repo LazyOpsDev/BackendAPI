@@ -1,15 +1,22 @@
-version: '3.7'
+version: "3.7"
 
 services:
   minitwit:
-    build: .
+    image: pkorsholm/api:latest
     ports:
-      - "8080:80"
-    
+      - "80:80"
+    deploy:
+      replicas: 4
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
   db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    ports:
-      - "11433:1433"
+    image: mysql
+    # ports:
+    #   - "11433:1433"
+    container_name: "db"
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "p@55w0rd"
@@ -17,6 +24,6 @@ services:
       - /var/opt/mssql:/tmp/mssql
       - /var/opt/sqlserver:/tmp/sqlserver
     healthcheck:
-      test: [ "CMD", "sqlcmd", "-U", "sa", "-P", "p@55w0rd", "-Q", "select 1" ]
+      test: ["CMD", "sqlcmd", "-U", "sa", "-P", "p@55w0rd", "-Q", "select 1"]
       interval: 1s
       retries: 20
