@@ -8,31 +8,31 @@ namespace Repository
 {
     public class LastNumberRepository : ILastNumberRepository
     {
+        private readonly CustomDbContext _context;
+
+        public LastNumberRepository(CustomDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task<int> ReadLatest()
         {
-            return 0;
-            using (var ctx = new CustomDbContext())
-            {
-                var r = await ctx.Latest.FirstOrDefaultAsync();
-                return r?.latest ?? 0;
-            }
+            var r = await _context.Latest.FirstOrDefaultAsync();
+            return r?.latest ?? 0;
         }
 
         public async Task WriteLatest(int i)
         {
-            return;
-            using (var ctx = new CustomDbContext())
+            var r = await _context.Latest.FirstOrDefaultAsync();
+            if (r == null)
             {
-                var r = await ctx.Latest.FirstOrDefaultAsync();
-                if (r == null)
-                {
-                    ctx.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
-                    await ctx.SaveChangesAsync();
-                    return;
-                }
-                r.latest = i;
-                ctx.Update(r);
+                _context.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
+                await _context.SaveChangesAsync();
+                return;
             }
+            r.latest = i;
+            _context.Update(r);
+
         }
     }
 }
