@@ -12,6 +12,7 @@ using Minitwit.Models;
 namespace Minitwit.API.Controllers
 {
     [Route("/")]
+    [LatestFilter]
     [ApiController]
     public class AuthController : ControllerBase
     {

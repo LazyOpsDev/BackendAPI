@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Minitwit.API.Controllers
 {
     [Route("/")]
+    [LatestFilter]
     [ApiController]
     public class UserController : ControllerBase
     {
