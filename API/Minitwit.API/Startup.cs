@@ -30,8 +30,8 @@ namespace Minitwit.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connString = @"Server=localhost;Database=minitwit;Uid=root;Pwd=hej123";
-            //var connString = @"Server=db;Database=minitwit;Uid=user;Pwd=P4sSw0rd";
+            //var connString = @"Server=localhost;Database=minitwit;Uid=root;Pwd=hej123";
+            var connString = @"Server=db;Database=minitwit;Uid=user;Pwd=P4sSw0rd";
             WaitForDBInit(connString);
 
             services.AddControllers();
@@ -39,7 +39,8 @@ namespace Minitwit.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITimelineRepository, TimelineRepository>();
             services.AddScoped<ILastNumberRepository, LastNumberRepository>();
-            services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString));
+            services.AddScoped<CustomDbContext>();
+            //services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString), ServiceLifetime.Scoped);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,13 +48,13 @@ namespace Minitwit.API
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
             }
             else
             {
                 //app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //app.UseHsts();
             }
 
             // app.UseHttpsRedirection();
@@ -83,9 +84,11 @@ namespace Minitwit.API
                     connection.Close();
                     break;
                 }
-                catch (MySqlException)
+                catch (MySqlException e)
                 {
+                    Console.WriteLine(e.StackTrace);
                     Thread.Sleep((int)Math.Pow(2, retries) * 1000);
+                    Console.WriteLine("retrying");
                     retries++;
                 }
             }
