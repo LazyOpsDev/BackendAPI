@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Autofac;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,17 +31,17 @@ namespace Minitwit.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //var connString = @"Server=localhost;Database=minitwit;Uid=root;Pwd=hej123";
-            var connString = @"Server=db;Database=minitwit;Uid=user;Pwd=P4sSw0rd";
+            var connString = Configuration["ConnectionString"];
             WaitForDBInit(connString);
-
             services.AddControllers();
+
+
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITimelineRepository, TimelineRepository>();
             services.AddScoped<ILastNumberRepository, LastNumberRepository>();
-            services.AddScoped<CustomDbContext>();
-            //services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString), ServiceLifetime.Scoped);
+            //services.AddScoped<CustomDbContext>();
+            services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

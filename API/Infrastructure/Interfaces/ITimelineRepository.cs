@@ -7,11 +7,11 @@ namespace Infrastructure.Interfaces
 {
     public interface ITimelineRepository
     {
-        Task<IEnumerable<Message>> GetPublicTimeline();
-        Task<IEnumerable<Message>> GetTimelineForLoggedInUser(Guid uid);
-        Task<IEnumerable<Message>> GetUserTimeline(string username);
+        IEnumerable<Message> GetPublicTimeline();
+        IEnumerable<Message> GetTimelineForLoggedInUser(Guid uid);
+        IEnumerable<Message> GetUserTimeline(string username);
 
-        Task PostMessage(string username, string message);
+        void PostMessage(string username, string message);
 
     }
 }

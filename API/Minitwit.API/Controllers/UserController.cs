@@ -30,12 +30,12 @@ namespace Minitwit.API.Controllers
 
             if (string.IsNullOrEmpty(follow.follow))
             {
-                if (!await _userRepository.UnfollowUser(username, follow.unfollow))
+                if (! _userRepository.UnfollowUser(username, follow.unfollow))
                     return NoContent();
             }
             else if (string.IsNullOrEmpty(follow.unfollow))
             {
-                if (!await _userRepository.FollowUser(username, follow.follow))
+                if (! _userRepository.FollowUser(username, follow.follow))
                     return NotFound();
             }
             return NoContent();

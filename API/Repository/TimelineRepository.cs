@@ -11,43 +11,43 @@ namespace Repository
 {
     public class TimelineRepository : ITimelineRepository
     {
-        //private readonly CustomDbContext _context;
+        private readonly CustomDbContext _context;
 
-        //public TimelineRepository(CustomDbContext context)
-        //{
-        //    _context = context;
-        //}
-
-        public async Task<IEnumerable<Message>> GetPublicTimeline()
+        public TimelineRepository(CustomDbContext context)
         {
-            //return new Message[] { };
-            using (var _context = new CustomDbContext())
-                return await _context.Messages.Where(m => !m.Flagged).ToListAsync();
+            _context = context;
         }
 
-        public async Task<IEnumerable<Message>> GetTimelineForLoggedInUser(Guid userId)
+        public IEnumerable<Message> GetPublicTimeline()
         {
-            using (var _context = new CustomDbContext())
-                return await _context.Messages.
+            //return new Message[] { };
+            //using (var _context = new CustomDbContext())
+                return  _context.Messages.Where(m => !m.Flagged).ToList();
+        }
+
+        public IEnumerable<Message> GetTimelineForLoggedInUser(Guid userId)
+        {
+            //using (var _context = new CustomDbContext())
+                return _context.Messages.
             Join(_context.Followers,
             m => m.User.UserId,
             f => f.Self.UserId,
             (m, f) => new { Message = m, Follower = f }).
             Where(elem => elem.Message.UserId == userId && elem.Follower.Self.UserId == userId)
-            .Select(elem => elem.Message).ToListAsync();
+            .Select(elem => elem.Message).ToList();
         }
 
-        public async Task<IEnumerable<Message>> GetUserTimeline(string username)
+        public IEnumerable<Message> GetUserTimeline(string username)
         {
-            using (var _context = new CustomDbContext())
-                return await _context.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToListAsync();
+            //using (var _context = new CustomDbContext())
+                return _context.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToList();
         }
 
-        public async Task PostMessage(string username, string message)
+        public void PostMessage(string username, string message)
         {
-            using(var _context = new CustomDbContext())
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            //using(var _context = new CustomDbContext())
+            //{
+                var user = _context.Users.FirstOrDefault(u => u.Username == username);
                 if (user == null)
                     throw new ArgumentException();
                 var msg = new Message();
@@ -59,8 +59,8 @@ namespace Repository
                 msg.PublishedTime = DateTime.Now;
 
                 _context.Messages.Add(msg);
-                await _context.SaveChangesAsync();
-            }
+                _context.SaveChanges();
+            //}
         }
     }
 }

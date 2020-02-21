@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,37 +9,37 @@ namespace Repository
 {
     public class LastNumberRepository : ILastNumberRepository
     {
-        //private readonly CustomDbContext _context;
+        private readonly CustomDbContext _context;
 
-        //public LastNumberRepository(CustomDbContext context)
-        //{
-        //    _context = context;
-        //}
-
-        public async Task<int> ReadLatest()
+        public LastNumberRepository(CustomDbContext context)
         {
-            using (var _context = new CustomDbContext())
-            {
-                var r = await _context.Latest.FirstOrDefaultAsync();
-                return r?.latest ?? 0;
-            }
+            _context = context;
         }
 
-        public async Task WriteLatest(int i)
+        public int ReadLatest()
         {
-            using (var _context = new CustomDbContext())
-            {
-                var r = await _context.Latest.FirstOrDefaultAsync();
+            //using (var _context = new CustomDbContext())
+            //{
+                var r = _context.Latest.FirstOrDefault();
+                return r?.latest ?? 0;
+            //}
+        }
+
+        public void WriteLatest(int i)
+        {
+            //using (var _context = new CustomDbContext())
+            //{
+                var r = _context.Latest.FirstOrDefault();
                 if (r == null)
                 {
                     _context.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                     return;
                 }
                 r.latest = i;
                 _context.Update(r);
-                await _context.SaveChangesAsync();
-            }
+                _context.SaveChanges();
+            //}
 
         }
     }
