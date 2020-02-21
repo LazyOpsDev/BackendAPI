@@ -72,7 +72,7 @@ namespace Minitwit.API
 
             // app.UseHttpsRedirection();
 
-            //context.Database.Migrate();
+            context.Database.Migrate();
 
             app.UseRouting();
 
