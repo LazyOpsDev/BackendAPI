@@ -7,19 +7,22 @@ services:
       - "80:80"
     links:
       - db
+    restart: "always"
+    networks:
+      - backend
     deploy:
-      # replicas: 4
+      replicas: 4
       # update_config:
       #   parallelism: 1
       #   delay: 10s
-      restart_policy:
-        condition: always
+      # restart_policy:
+      #   condition: "always"
   db:
     image: mysql
     # ports:
     #   - "11433:1433"
     container_name: "db"
-    restart: always
+    restart: "always"
     environment:
       - MYSQL_USER=user
       - MYSQL_PASSWORD=P4sSw0rd
@@ -29,9 +32,16 @@ services:
     #   SA_PASSWORD: "p@55w0rd"
     volumes:
       - dbvol:/var/lib/mysql
+    networks:
+      - backend
+    deploy:
+      replicas: 1
     # healthcheck:
     #   test: ["CMD", "sqlcmd", "-U", "sa", "-P", "p@55w0rd", "-Q", "select 1"]
     #   interval: 1s
     #   retries: 20
 volumes:
   dbvol:
+
+networks:
+  backend:
