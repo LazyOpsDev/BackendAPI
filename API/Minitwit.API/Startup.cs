@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Minitwit.DataAccessLayer;
 using MySql.Data.MySqlClient;
 using Repository;
@@ -32,15 +33,26 @@ namespace Minitwit.API
         public void ConfigureServices(IServiceCollection services)
         {
             var connString = Configuration["ConnectionString"];
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+                    .AddConsole();
+            });
+
+            ILogger logger = loggerFactory.CreateLogger<Program>();
+            logger.LogError(connString);
             WaitForDBInit(connString);
             services.AddControllers();
-
 
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITimelineRepository, TimelineRepository>();
             services.AddScoped<ILastNumberRepository, LastNumberRepository>();
             //services.AddScoped<CustomDbContext>();
+            //logger.Log(LogLevel.Error, connString);
             services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString));
         }
 
@@ -60,7 +72,7 @@ namespace Minitwit.API
 
             // app.UseHttpsRedirection();
 
-            context.Database.Migrate();
+            //context.Database.Migrate();
 
             app.UseRouting();
 

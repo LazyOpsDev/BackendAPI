@@ -45,3 +45,5 @@ volumes:
 
 networks:
   backend:
+    driver: overlay
+    attachable: true
