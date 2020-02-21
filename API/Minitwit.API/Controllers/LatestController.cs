@@ -24,7 +24,7 @@ namespace Minitwit.API.Controllers
         public async Task<IActionResult> Get()
         {
 
-            return new OkObjectResult(new { latest=await _lastNumberRepository.ReadLatest() });
+            return new OkObjectResult(new { latest=  _lastNumberRepository.ReadLatest() });
         }
     }
     //public class latestModel

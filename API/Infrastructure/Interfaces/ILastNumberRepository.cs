@@ -5,7 +5,7 @@ namespace Infrastructure.Interfaces
 {
     public interface ILastNumberRepository
     {
-        Task WriteLatest(int i);
-        Task<int> ReadLatest();
+        void WriteLatest(int i);
+        int ReadLatest();
     }
 }

@@ -36,7 +36,7 @@ namespace Minitwit.API.Controllers
         public async Task<IActionResult> Public()
         {
             //Return all messages by all users
-            return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
+            return new OkObjectResult( _timelineRepository.GetPublicTimeline());
         }
 
     [LatestFilter]
@@ -45,7 +45,7 @@ namespace Minitwit.API.Controllers
         public async Task<IActionResult> UserTimeline(string username)
         {
             //Return messages by a single user
-            return new OkObjectResult(await _timelineRepository.GetUserTimeline(username));
+            return new OkObjectResult( _timelineRepository.GetUserTimeline(username));
         }
 
     [LatestFilter]
@@ -61,10 +61,10 @@ namespace Minitwit.API.Controllers
             switch (Request.Method)
             {
                 case "POST":
-                    await _timelineRepository.PostMessage(username, msg.content);
+                     _timelineRepository.PostMessage(username, msg.content);
                     return NoContent();
                 case "GET":
-                    await _timelineRepository.GetUserTimeline(username);
+                     _timelineRepository.GetUserTimeline(username);
                     return NoContent();
             }
 
