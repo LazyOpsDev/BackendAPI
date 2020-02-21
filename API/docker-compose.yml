@@ -10,6 +10,8 @@ services:
     restart: "always"
     networks:
       - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     deploy:
       replicas: 4
       # update_config:
