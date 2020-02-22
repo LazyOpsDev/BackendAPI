@@ -2,28 +2,50 @@ version: "3.7"
 
 services:
   minitwit:
-    image: pkorsholm/api:latest
+    image: lazyopsdev/api:latest
     ports:
       - "80:80"
+    links:
+      - db
+    restart: "always"
+    networks:
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     deploy:
       replicas: 4
-      update_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: on-failure
+      # update_config:
+      #   parallelism: 1
+      #   delay: 10s
+      # restart_policy:
+      #   condition: "always"
   db:
     image: mysql
     # ports:
     #   - "11433:1433"
     container_name: "db"
+    restart: "always"
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "p@55w0rd"
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=P4sSw0rd
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=minitwit
+    #   ACCEPT_EULA: "Y"
+    #   SA_PASSWORD: "p@55w0rd"
     volumes:
-      - /var/opt/mssql:/tmp/mssql
-      - /var/opt/sqlserver:/tmp/sqlserver
-    healthcheck:
-      test: ["CMD", "sqlcmd", "-U", "sa", "-P", "p@55w0rd", "-Q", "select 1"]
-      interval: 1s
-      retries: 20
+      - dbvol:/var/lib/mysql
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+    # healthcheck:
+    #   test: ["CMD", "sqlcmd", "-U", "sa", "-P", "p@55w0rd", "-Q", "select 1"]
+    #   interval: 1s
+    #   retries: 20
+volumes:
+  dbvol:
+
+networks:
+  backend:
+    driver: overlay
+    attachable: true

@@ -17,74 +17,87 @@ namespace Repository
         {
             _context = context;
         }
-        public async Task<bool> FollowUser(string username, string follows)
+        public bool FollowUser(string username, string follows)
         {
-            var userWho = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (userWho == null)
-                throw new ArgumentException();
-            
-            var followsUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == follows);
-            if (followsUser == null)
-                throw new ArgumentException();
+            //using (var _context = new CustomDbContext())
+            //{
+                var userWho = _context.Users.FirstOrDefault(u => u.Username == username);
+                if (userWho == null)
+                    throw new ArgumentException();
 
-            var follower = new Follower { Self = userWho, Following = followsUser };
-            _context.Followers.Add(follower);
+                var followsUser = _context.Users.FirstOrDefault(u => u.Username == follows);
+                if (followsUser == null)
+                    throw new ArgumentException();
 
-            return await _context.SaveChangesAsync () != 0;
+                var follower = new Follower { Self = userWho, Following = followsUser };
+                _context.Followers.Add(follower);
+
+                return _context.SaveChanges() != 0;
+            //}
         }
 
-        public async Task<Guid> Login(LoginModel user)
+        public Guid Login(LoginModel user)
         {
-            var users = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-            if (users == null)
-                throw new ArgumentException();
+            //using (var _context = new CustomDbContext())
+            //{
+                var users = _context.Users.FirstOrDefault(u => u.Username == user.Username);
+                if (users == null)
+                    throw new ArgumentException();
 
-            if (PasswordHandler.Validate(user.Password, users.PasswordHash))
-                return users.UserId;
-            
-            return Guid.NewGuid();
+                if (PasswordHandler.Validate(user.Password, users.PasswordHash))
+                    return users.UserId;
+
+                return Guid.NewGuid();
+            //}
         }
 
-        public async Task<Guid> RegisterUser(RegisterModel user)
+        public Guid RegisterUser(RegisterModel user)
         {
-            var users = _context.Users.Where(u => u.Username == user.username);
-            if (users.Any())
-                throw new ArgumentException();
+            //using (var _context = new CustomDbContext())
+            //{
 
-            var passwordHash = PasswordHandler.CreatePasswordHash(user.pwd);
+                var users = _context.Users.Where(u => u.Username == user.username);
+                if (users.Any())
+                    return Guid.Empty;
 
-            var usr = new User()
-            {
-                Username = user.username,
-                Email = user.email,
-                PasswordHash = passwordHash
-            };
+                var passwordHash = PasswordHandler.CreatePasswordHash(user.pwd);
 
-            _context.Users.Add(usr);
-            if(await _context.SaveChangesAsync() > 0)
-            {
-                return usr.UserId;
-            }
+                var usr = new User()
+                {
+                    Username = user.username,
+                    Email = user.email,
+                    PasswordHash = passwordHash
+                };
 
-            return Guid.NewGuid();
+                _context.Users.Add(usr);
+                if (_context.SaveChanges() > 0)
+                {
+                    return usr.UserId;
+                }
+
+                return Guid.Empty;
+            //}
         }
 
-        public async Task<bool> UnfollowUser(string username, string unfollows)
+        public bool UnfollowUser(string username, string unfollows)
         {
-            var usr = _context.Users.FirstOrDefault(u => u.Username == username);
-            var unflws = _context.Users.FirstOrDefault(u => u.Username == unfollows);
+            //using (var _context = new CustomDbContext())
+            //{
+                var usr = _context.Users.FirstOrDefault(u => u.Username == username);
+                var unflws = _context.Users.FirstOrDefault(u => u.Username == unfollows);
 
-            var followers = await _context.Followers
-                .Include(f => f.Self)
-                .Include(f => f.Following)
-                .FirstOrDefaultAsync(f => f.Self.Username == username && f.Following.Username == unfollows);
+                var followers = _context.Followers
+                    .Include(f => f.Self)
+                    .Include(f => f.Following)
+                    .FirstOrDefault(f => f.Self.Username == username && f.Following.Username == unfollows);
 
-            if (followers == null)
-                return false;
+                if (followers == null)
+                    return false;
 
-            _context.Followers.Remove(followers);
+                _context.Followers.Remove(followers);
 
-            return await _context.SaveChangesAsync() != 0;
+                return _context.SaveChanges() != 0;
+            //}
         }
     }
 }

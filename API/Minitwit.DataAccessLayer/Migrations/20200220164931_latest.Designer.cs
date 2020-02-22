@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Minitwit.DataAccessLayer;
 
 namespace Minitwit.DataAccessLayer.Migrations
 {
     [DbContext(typeof(CustomDbContext))]
-    partial class CustomDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200220164931_latest")]
+    partial class latest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,12 +69,15 @@ namespace Minitwit.DataAccessLayer.Migrations
                     b.Property<DateTime>("PublishedTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<Guid?>("TestKey")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("MessageId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TestKey");
 
                     b.ToTable("Messages");
                 });
@@ -112,9 +117,7 @@ namespace Minitwit.DataAccessLayer.Migrations
                 {
                     b.HasOne("Minitwit.Models.User", "User")
                         .WithMany("Messages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TestKey");
                 });
 #pragma warning restore 612, 618
         }

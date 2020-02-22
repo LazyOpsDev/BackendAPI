@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,23 +16,30 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<int> ReadLatest()
+        public int ReadLatest()
         {
-            var r = await _context.Latest.FirstOrDefaultAsync();
-            return r?.latest ?? 0;
+            //using (var _context = new CustomDbContext())
+            //{
+                var r = _context.Latest.FirstOrDefault();
+                return r?.latest ?? 0;
+            //}
         }
 
-        public async Task WriteLatest(int i)
+        public void WriteLatest(int i)
         {
-            var r = await _context.Latest.FirstOrDefaultAsync();
-            if (r == null)
-            {
-                _context.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
-                await _context.SaveChangesAsync();
-                return;
-            }
-            r.latest = i;
-            _context.Update(r);
+            //using (var _context = new CustomDbContext())
+            //{
+                var r = _context.Latest.FirstOrDefault();
+                if (r == null)
+                {
+                    _context.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
+                    _context.SaveChanges();
+                    return;
+                }
+                r.latest = i;
+                _context.Update(r);
+                _context.SaveChanges();
+            //}
 
         }
     }

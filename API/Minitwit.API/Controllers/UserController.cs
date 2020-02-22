@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace Minitwit.API.Controllers
 {
     [Route("/")]
-    [LatestFilter]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -19,6 +18,7 @@ namespace Minitwit.API.Controllers
             _userRepository = userRepository;
         }
 
+        [LatestFilter]
         [HttpPost]
         [Route("fllws/{username}")]
         public async Task<IActionResult> fllws([FromBody]followModel follow, string username)
@@ -30,12 +30,12 @@ namespace Minitwit.API.Controllers
 
             if (string.IsNullOrEmpty(follow.follow))
             {
-                if (!await _userRepository.UnfollowUser(username, follow.unfollow))
+                if (! _userRepository.UnfollowUser(username, follow.unfollow))
                     return NoContent();
             }
             else if (string.IsNullOrEmpty(follow.unfollow))
             {
-                if (!await _userRepository.FollowUser(username, follow.follow))
+                if (! _userRepository.FollowUser(username, follow.follow))
                     return NotFound();
             }
             return NoContent();

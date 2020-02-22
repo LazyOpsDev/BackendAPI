@@ -6,9 +6,9 @@ namespace Infrastructure.Interfaces
 {
     public interface IUserRepository
     {
-        Task<bool> UnfollowUser(string username, string unfollows);
-        Task<bool> FollowUser(string username, string follows);
-        Task<Guid> RegisterUser(RegisterModel user);
-        Task<Guid> Login(LoginModel user);
+        bool UnfollowUser(string username, string unfollows);
+        bool FollowUser(string username, string follows);
+        Guid RegisterUser(RegisterModel user);
+        Guid Login(LoginModel user);
     }
 }

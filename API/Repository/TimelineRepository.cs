@@ -18,43 +18,49 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Message>> GetPublicTimeline()
+        public IEnumerable<Message> GetPublicTimeline()
         {
             //return new Message[] { };
-            return await _context.Messages.Where(m => !m.Flagged).ToListAsync();
+            //using (var _context = new CustomDbContext())
+                return  _context.Messages.Where(m => !m.Flagged).ToList();
         }
 
-        public async Task<IEnumerable<Message>> GetTimelineForLoggedInUser(Guid userId)
+        public IEnumerable<Message> GetTimelineForLoggedInUser(Guid userId)
         {
-            return await _context.Messages.
+            //using (var _context = new CustomDbContext())
+                return _context.Messages.
             Join(_context.Followers,
             m => m.User.UserId,
             f => f.Self.UserId,
             (m, f) => new { Message = m, Follower = f }).
             Where(elem => elem.Message.UserId == userId && elem.Follower.Self.UserId == userId)
-            .Select(elem => elem.Message).ToListAsync();
+            .Select(elem => elem.Message).ToList();
         }
 
-        public async Task<IEnumerable<Message>> GetUserTimeline(string username)
+        public IEnumerable<Message> GetUserTimeline(string username)
         {
-            return await _context.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToListAsync();
+            //using (var _context = new CustomDbContext())
+                return _context.Messages.Include(m => m.User).Where(m => !m.Flagged && m.User.Username == username).ToList();
         }
 
-        public async Task PostMessage(string username, string message)
+        public void PostMessage(string username, string message)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null)
-                throw new ArgumentException();
-            var msg = new Message
-            {
-                Content = message,
-                Flagged = false,
-                User = user,
-                UserId = user.UserId,
-                PublishedTime = DateTime.Now,
-            };
-            _context.Messages.Add(msg);
-            await _context.SaveChangesAsync();
+            //using(var _context = new CustomDbContext())
+            //{
+                var user = _context.Users.FirstOrDefault(u => u.Username == username);
+                if (user == null)
+                    throw new ArgumentException();
+                var msg = new Message();
+
+                msg.Content = message;
+                msg.Flagged = false;
+                msg.User = user;
+                msg.UserId = user.UserId;
+                msg.PublishedTime = DateTime.Now;
+
+                _context.Messages.Add(msg);
+                _context.SaveChanges();
+            //}
         }
     }
 }
