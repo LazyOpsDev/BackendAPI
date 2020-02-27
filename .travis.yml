@@ -1,9 +1,5 @@
 language: csharp
 mono: none
-env:
-  - ORG_NAME=lazyopsdev
-  - IMAGE_NAME=api
-  - DEFAULT_DOCKER_TAG=latest
 
 dotnet: 3.1.100
 services:
@@ -28,6 +24,10 @@ jobs:
     - stage: deliver
       if: tag IS present
       name: Upload docker image
+      env:
+        - ORG_NAME=lazyopsdev
+        - IMAGE_NAME=api
+        - DEFAULT_DOCKER_TAG=latest
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - cd API && docker build -t $IMAGE_NAME .
