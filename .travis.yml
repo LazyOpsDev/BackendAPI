@@ -1,0 +1,14 @@
+language: csharp
+mono: none
+
+dotnet: 3.1.100
+solution: API/Solution1.sln
+install:
+  - dotnet restore
+script:
+  - dotnet build --configuration Release **/*.sln
+#  - dotnet test
+
+notifications:
+  email:
+    - krza@itu.dk
