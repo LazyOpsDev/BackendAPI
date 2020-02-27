@@ -22,7 +22,7 @@ jobs:
 
     - stage: deliver
       #if: branch = develop AND env(TRAVIS_PULL_REQUEST) IS false AND type = push
-      if: tag IS presnt
+      if: tag IS present
       name: Upload artifact
       script:
         - echo "$TRAVIS_TAG"
