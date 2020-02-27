@@ -1,8 +1,13 @@
 language: csharp
 mono: none
+env:
+  - ORG_NAME=lazyopsdev
+  - IMAGE_NAME=api
+  - DEFAULT_DOCKER_TAG=latest
 
 dotnet: 3.1.100
-
+services:
+  - docker
 install:
   - dotnet restore API/Solution1.sln
 
@@ -21,13 +26,18 @@ jobs:
         - echo "Test"
 
     - stage: deliver
-      #if: branch = develop AND env(TRAVIS_PULL_REQUEST) IS false AND type = push
       if: tag IS present
-      name: Upload artifact
+      name: Upload docker image
       script:
-        - echo "$TRAVIS_TAG"
-        - echo "Test more commits into branch"
-        - echo "Add one more commit"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - cd API && docker build -t $IMAGE_NAME .
+        - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
+        - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+        - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
+        - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+        # - git fetch origin master && git checkout master || exit
+        # - git merge develop || exit
+        # - git push origin master
 
 notifications:
   email:
