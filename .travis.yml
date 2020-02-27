@@ -21,9 +21,7 @@ jobs:
         - echo "Test"
 
     - stage: deliver
-      if: branch = develop AND \
-          env(TRAVIS_PULL_REQUEST) IS true AND \
-          type = push
+      if: branch = develop AND env(TRAVIS_PULL_REQUEST) IS true AND type = push
       name: Upload artifact
       script:
         - echo "Push image"
