@@ -19,8 +19,8 @@ jobs:
         - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
 
     - stage: deliver
+      if: env(TRAVIS_PULL_REQUEST)=false AND env(TRAVIS_BRANCH)=develop
       name: Upload artifact
-      if: branch = develop
       script:
         - echo "Push image"
 
