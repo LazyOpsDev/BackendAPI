@@ -18,6 +18,12 @@ jobs:
       script: 
         - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
 
+    - stage: deliver
+      name: Upload artifact
+      if: branch = develop
+      script:
+        - echo "Push image"
+
 notifications:
   email:
     - krza@itu.dk
