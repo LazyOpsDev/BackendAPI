@@ -25,6 +25,7 @@ jobs:
       name: Upload artifact
       script:
         - echo "Push image"
+        - echo "Test more commits into branch"
 
 notifications:
   email:
