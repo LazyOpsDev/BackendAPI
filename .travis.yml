@@ -11,15 +11,17 @@ jobs:
     - stage: build
       name: "Build Solution"
       script: 
-        - dotnet build --configuration Release API/Solution1.sln
+        #- dotnet build --configuration Release API/Solution1.sln
+        - echo "Build"
 
     - stage: test
       name: "Run Tests"
       script: 
-        - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
+        #- dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
+        - echo "Test"
 
     - stage: deliver
-      if: env(TRAVIS_PULL_REQUEST)=false AND env(TRAVIS_BRANCH)=develop
+      if: branch = develop AND env(TRAVIS_PULL_REQUEST) = false
       name: Upload artifact
       script:
         - echo "Push image"
