@@ -6,7 +6,7 @@ install:
   - dotnet restore API/Solution1.sln
 script:
   - dotnet build --configuration Release API/Solution1.sln
-#  - dotnet test
+  - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
 
 notifications:
   email:
