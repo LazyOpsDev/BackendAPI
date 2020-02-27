@@ -30,19 +30,23 @@ jobs:
         - DEFAULT_DOCKER_TAG=latest
         - GITHUB_USER_EMAIL="lazyopsdev@gmail.com"
         - GITHUB_USER_NAME="lazyopsdev-ci"
+        - GITHUB_REPO_URI="LazyOpsDev/Minitwit.Backend"
       script:
+        # Build docker image and push to dockerhub:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - cd API && docker build -t $IMAGE_NAME .
         - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
         - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
         - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
         - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+        # GitHub auto merge to master:
         - git config --global user.email "$GITHUB_USER_EMAIL"
         - git config --global user.name "$GITHUB_USER_NAME"
-        - git fetch origin master
-        - git checkout master
-        - git merge develop
-        - git remote add travis-origin https://${GITHUB_TOKEN}@github.com/LazyOpsDev/Minitwit.Backend.git > /dev/null 2>&1
+        - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* || exit
+        - git fetch --all || exit
+        - git checkout master || exit
+        - git merge --no-ff "$TRAVIS_COMMIT" || exit
+        - git remote add travis-origin https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO_URI}.git > /dev/null 2>&1
         - git push --quiet --set-upstream travis-origin master
 
 notifications:
