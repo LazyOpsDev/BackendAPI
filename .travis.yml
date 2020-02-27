@@ -28,6 +28,8 @@ jobs:
         - ORG_NAME=lazyopsdev
         - IMAGE_NAME=api
         - DEFAULT_DOCKER_TAG=latest
+        - GITHUB_USER_EMAIL="lazyopsdev@gmail.com"
+        - GITHUB_USER_NAME="lazyopsdev-ci"
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - cd API && docker build -t $IMAGE_NAME .
@@ -35,9 +37,13 @@ jobs:
         - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
         - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
         - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
-        # - git fetch origin master && git checkout master || exit
-        # - git merge develop || exit
-        # - git push origin master
+        - git config --global user.email "$GITHUB_USER_EMAIL"
+        - git config --global user.name "$GITHUB_USER_NAME"
+        - git fetch origin master
+        - git checkout master
+        - git merge develop
+        - git remote add travis-origin https://${GITHUB_TOKEN}@github.com/LazyOpsDev/Minitwit.Backend.git > /dev/null 2>&1
+        - git push --quiet --set-upstream travis-origin master
 
 notifications:
   email:
