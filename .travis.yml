@@ -12,18 +12,20 @@ branches:
 
 jobs:
   include:
+    # Build and run tests
     - stage: build
       name: "Build Solution"
       script: 
-        #- dotnet build --configuration Release API/Solution1.sln
+        - dotnet build --configuration Release API/Solution1.sln
         - echo "Build"
 
     - stage: test
       name: "Run Tests"
       script: 
-        #- dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
+        - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
         - echo "Test"
 
+    # Build docker image and push to dockerhub:
     - stage: deliver
       if: tag IS present
       name: Upload docker image
@@ -31,18 +33,23 @@ jobs:
         - ORG_NAME=lazyopsdev
         - IMAGE_NAME=api
         - DEFAULT_DOCKER_TAG=latest
-        - GITHUB_USER_EMAIL="lazyopsdev@gmail.com"
-        - GITHUB_USER_NAME="lazyopsdev-ci"
-        - GITHUB_REPO_URI="LazyOpsDev/Minitwit.Backend"
       script:
-        # Build docker image and push to dockerhub:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - cd API && docker build -t $IMAGE_NAME .
         - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
         - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
         - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
         - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
-        # GitHub auto merge to master:
+
+    # GitHub auto merge to master:
+    - stage: auto-merge
+      if: tag IS present
+      name: Merge to master
+      env:
+        - GITHUB_USER_EMAIL="lazyopsdev@gmail.com"
+        - GITHUB_USER_NAME="lazyopsdev-ci"
+        - GITHUB_REPO_URI="LazyOpsDev/Minitwit.Backend"
+      script:
         - git config --global user.email "$GITHUB_USER_EMAIL"
         - git config --global user.name "$GITHUB_USER_NAME"
         - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* || exit
@@ -55,7 +62,6 @@ jobs:
 notifications:
   email:
     - krza@itu.dk
-    - mr.kislun@gmail.com
     - phko@itu.dk
     - alsb@itu.dk
     - arca@itu.dk
