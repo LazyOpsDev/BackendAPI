@@ -6,10 +6,12 @@ COPY . ./
 RUN dotnet restore Solution1.sln
 
 # copy everything else and build app
-RUN dotnet publish -c debug -o /app --no-restore
+RUN dotnet publish -c Release -o /app --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=build /app ./
-ENTRYPOINT ["dotnet", "Minitwit.Website.dll"]
+EXPOSE 80:80
+
+ENTRYPOINT ["dotnet", "Minitwit.API.dll"]

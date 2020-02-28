@@ -1,35 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Minitwit.API.Util;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        // GET: api/User
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IUserRepository _userRepository;
+
+        public UserController(IUserRepository userRepository)
         {
-            return new string[] { "value1", "value2" };
+            _userRepository = userRepository;
         }
 
-        // GET: api/User/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/User
+        [LatestFilter]
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Route("fllws/{username}")]
+        public async Task<IActionResult> fllws([FromBody]followModel follow, string username)
         {
-        }
+            //TODO maybe auth
+            //If user not logged in 
+            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
+            //    return Unauthorized();
 
+            if (string.IsNullOrEmpty(follow.follow))
+            {
+                if (! _userRepository.UnfollowUser(username, follow.unfollow))
+                    return NoContent();
+            }
+            else if (string.IsNullOrEmpty(follow.unfollow))
+            {
+                if (! _userRepository.FollowUser(username, follow.follow))
+                    return NotFound();
+            }
+            return NoContent();
+        }
+    }
+    public class followModel
+    {
+        public string follow { get; set; }
+        public string unfollow { get; set; }
     }
 }

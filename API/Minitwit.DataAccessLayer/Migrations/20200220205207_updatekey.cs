@@ -3,21 +3,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Minitwit.DataAccessLayer.Migrations
 {
-    public partial class initial2 : Migration
+    public partial class updatekey : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Messages_Users_UserId",
+                name: "FK_Messages_Users_TestKey",
                 table: "Messages");
 
-            migrationBuilder.AlterColumn<Guid>(
-                name: "UserId",
+            migrationBuilder.DropIndex(
+                name: "IX_Messages_TestKey",
+                table: "Messages");
+
+            migrationBuilder.DropColumn(
+                name: "TestKey",
+                table: "Messages");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_UserId",
                 table: "Messages",
-                nullable: false,
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier",
-                oldNullable: true);
+                column: "UserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Messages_Users_UserId",
@@ -34,17 +39,25 @@ namespace Minitwit.DataAccessLayer.Migrations
                 name: "FK_Messages_Users_UserId",
                 table: "Messages");
 
-            migrationBuilder.AlterColumn<Guid>(
-                name: "UserId",
+            migrationBuilder.DropIndex(
+                name: "IX_Messages_UserId",
+                table: "Messages");
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "TestKey",
                 table: "Messages",
-                type: "uniqueidentifier",
-                nullable: true,
-                oldClrType: typeof(Guid));
+                type: "char(36)",
+                nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_TestKey",
+                table: "Messages",
+                column: "TestKey");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Messages_Users_UserId",
+                name: "FK_Messages_Users_TestKey",
                 table: "Messages",
-                column: "UserId",
+                column: "TestKey",
                 principalTable: "Users",
                 principalColumn: "UserId",
                 onDelete: ReferentialAction.Restrict);
