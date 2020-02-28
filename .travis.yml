@@ -6,6 +6,9 @@ services:
   - docker
 install:
   - dotnet restore API/Solution1.sln
+branches:
+  except:
+    - master
 
 jobs:
   include:
