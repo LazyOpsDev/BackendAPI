@@ -7,6 +7,8 @@ services:
       - "80:80"
     links:
       - db
+    depends_on:
+      - db
     restart: "always"
     networks:
       - backend
