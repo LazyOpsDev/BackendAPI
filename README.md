@@ -12,5 +12,5 @@ docker image pull lazyopsdev/api:latest
 
 #### deploy on swarm:
 ```
-docker service update --update-parallelism 1 --update-delay 10s -- minitwit_minitwit
+docker service update --update-parallelism 1 --update-delay 10s minitwit_minitwit
 ```
