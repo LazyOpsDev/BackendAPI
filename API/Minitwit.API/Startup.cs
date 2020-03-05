@@ -54,6 +54,12 @@ namespace Minitwit.API
             //services.AddScoped<CustomDbContext>();
             //logger.Log(LogLevel.Error, connString);
             services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString));
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,6 +83,7 @@ namespace Minitwit.API
             app.UseRouting();
 
             //app.UseAuthorization();
+            app.UseCors("MyPolicy");
 
             app.UseEndpoints(endpoints =>
             {
