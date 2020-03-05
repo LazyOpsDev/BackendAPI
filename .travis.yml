@@ -13,52 +13,66 @@ branches:
 jobs:
   include:
     # Build and run tests
-    - stage: build
-      name: "Build Solution"
-      script: 
-        - dotnet build --configuration Release API/Solution1.sln
-        - echo "Build"
+    # - stage: build
+    #   name: "Build Solution"
+    #   script: 
+    #     - dotnet build --configuration Release API/Solution1.sln
 
-    - stage: test
-      name: "Run Tests"
-      script: 
-        - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
-        - echo "Test"
+    # - stage: test
+    #   name: "Run Tests"
+    #   script: 
+    #     - dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
 
-    # Build docker image and push to dockerhub:
-    - stage: deliver
-      if: tag IS present
-      name: Upload docker image
+    # # Build docker image and push to dockerhub:
+    # - stage: deliver
+    #   if: tag IS present
+    #   name: Upload docker image
+    #   env:
+    #     - ORG_NAME=lazyopsdev
+    #     - IMAGE_NAME=api
+    #     - DEFAULT_DOCKER_TAG=latest
+    #   script:
+    #     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    #     - cd API && docker build -t $IMAGE_NAME .
+    #     - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
+    #     - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+    #     - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
+    #     - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+
+    # # GitHub auto merge to master:
+    # - stage: auto-merge
+    #   if: tag IS present
+    #   name: Merge to master
+    #   env:
+    #     - GITHUB_USER_EMAIL="lazyopsdev@gmail.com"
+    #     - GITHUB_USER_NAME="lazyopsdev-ci"
+    #     - GITHUB_REPO_URI="LazyOpsDev/Minitwit.Backend"
+    #   script:
+    #     - git config --global user.email "$GITHUB_USER_EMAIL"
+    #     - git config --global user.name "$GITHUB_USER_NAME"
+    #     - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* || exit
+    #     - git fetch --all || exit
+    #     - git checkout master || exit
+    #     - git merge --no-ff "$TRAVIS_COMMIT" || exit
+    #     - git remote add travis-origin https://${GITHUB_USER_NAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPO_URI}.git > /dev/null 2>&1
+    #     - git push --quiet --set-upstream travis-origin master
+
+    # Deploy to test env
+    - stage: deploy-test
+      # if: tag IS present
+      name: "Deploy to test environment"
+      install: skip
       env:
         - ORG_NAME=lazyopsdev
         - IMAGE_NAME=api
         - DEFAULT_DOCKER_TAG=latest
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - cd API && docker build -t $IMAGE_NAME .
-        - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
-        - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
-        - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
-        - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
-
-    # GitHub auto merge to master:
-    - stage: auto-merge
-      if: tag IS present
-      name: Merge to master
-      env:
-        - GITHUB_USER_EMAIL="lazyopsdev@gmail.com"
-        - GITHUB_USER_NAME="lazyopsdev-ci"
-        - GITHUB_REPO_URI="LazyOpsDev/Minitwit.Backend"
-      script:
-        - git config --global user.email "$GITHUB_USER_EMAIL"
-        - git config --global user.name "$GITHUB_USER_NAME"
-        - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* || exit
-        - git fetch --all || exit
-        - git checkout master || exit
-        - git merge --no-ff "$TRAVIS_COMMIT" || exit
-        - git remote add travis-origin https://${GITHUB_USER_NAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPO_URI}.git > /dev/null 2>&1
-        - git push --quiet --set-upstream travis-origin master
-
+      script: |
+        ssh -o "StrictHostKeyChecking no" ${DO_USER}@${DO_SERVER} \
+        "source /root/.bashrc && \
+        docker-compose -f API/docker-compose.yml pull && \
+        docker-compose -f API/docker-compose.yml up -d && \
+        docker pull ${ORG_NAME}/${IMAGE_NAME}:${DEFAULT_DOCKER_TAG}"
+    
 notifications:
   email:
     - krza@itu.dk
