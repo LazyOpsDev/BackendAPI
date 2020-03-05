@@ -26,6 +26,7 @@ namespace Minitwit.API
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public IConfiguration Configuration { get; }
 
@@ -54,7 +55,8 @@ namespace Minitwit.API
             //services.AddScoped<CustomDbContext>();
             //logger.Log(LogLevel.Error, connString);
             services.AddDbContext<CustomDbContext>(o => o.UseMySql(connString));
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+
+            services.AddCors(o => o.AddPolicy(MyAllowSpecificOrigins, builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
@@ -83,11 +85,11 @@ namespace Minitwit.API
             app.UseRouting();
 
             //app.UseAuthorization();
-            app.UseCors("MyPolicy");
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
             });
         }
 
