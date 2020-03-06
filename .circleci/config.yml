@@ -19,6 +19,11 @@
       - push_artifact:
           requires:
             - build_artifact
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
 
  jobs:
   build:
