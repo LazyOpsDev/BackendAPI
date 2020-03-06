@@ -1,15 +1,32 @@
- version: 2.1
+ version: 2
+ 
+ workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+
  jobs:
   build:
+    working_directory: ~/source
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.1
     steps:
       - checkout
-      - run: dotnet restore API/Solution1.sln
-      - run: dotnet build --configuration Release API/Solution1.sln
+      - run:
+          name: Install
+          command: dotnet restore API/Solution1.sln
+      - run:
+          name: Build
+          command: dotnet build --configuration Release API/Solution1.sln
   test:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.1
     steps:
       - checkout
-      - run: dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj
+      - run:
+          name: Test
+          command: 'dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj'
