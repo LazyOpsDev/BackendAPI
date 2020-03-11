@@ -71,7 +71,7 @@ services:
       - "./prometheusvol/prometheus.yml:/etc/prometheus/prometheus.yml"
 
   grafana:
-    image: grafana/prometheus
+    image: grafana/grafana
     depends_on: 
       - prometheus
     ports: 
