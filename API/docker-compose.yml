@@ -60,10 +60,10 @@ services:
 
   prometheus:
     image: prom/prometheus
-    ports: 
-      - "9090:9090"
     depends_on: 
       - promswarmconnect
+    ports: 
+      - "9090:9090"
     restart: "always"
     networks:
       - backend
