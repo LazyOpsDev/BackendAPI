@@ -22,7 +22,7 @@ namespace Repository
         {
             //return new Message[] { };
             //using (var _context = new CustomDbContext())
-                return  _context.Messages.Where(m => !m.Flagged).ToList();
+                return  _context.Messages.Where(m => !m.Flagged).OrderBy(m => m.PublishedTime).ToList().Take(100);
         }
 
         public IEnumerable<Message> GetTimelineForLoggedInUser(Guid userId)
