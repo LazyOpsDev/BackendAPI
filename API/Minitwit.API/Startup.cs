@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Minitwit.DataAccessLayer;
 using MySql.Data.MySqlClient;
+using Prometheus;
 using Repository;
 
 namespace Minitwit.API
@@ -34,6 +35,7 @@ namespace Minitwit.API
         public void ConfigureServices(IServiceCollection services)
         {
             var connString = Configuration["ConnectionString"];
+            //connString = "Server=localhost;Database=minitwit;Uid=root;Pwd=hej123;";
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder
@@ -83,6 +85,7 @@ namespace Minitwit.API
             context.Database.Migrate();
 
             app.UseRouting();
+            app.UseHttpMetrics();
 
             //app.UseAuthorization();
             app.UseCors(MyAllowSpecificOrigins);
@@ -90,10 +93,11 @@ namespace Minitwit.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
+                endpoints.MapMetrics();
             });
         }
 
-        private void WaitForDBInit(string connectionString)
+        private void WaitForDBInit(string connectionString, Microsoft.Extensions.Hosting.IHostApplicationLifetime lifetime = null)
         {
             var connection = new MySqlConnection(connectionString);
             int retries = 1;
@@ -114,6 +118,8 @@ namespace Minitwit.API
                     retries++;
                 }
             }
+            if (retries >= 7 && lifetime != null)
+                lifetime.StopApplication();
         }
     }
 }

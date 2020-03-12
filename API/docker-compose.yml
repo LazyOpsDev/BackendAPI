@@ -2,16 +2,19 @@ version: "3.7"
 
 services:
   minitwit:
-    image: lazyopsdev/api:latest
+    image: pkorsholm/api:monitoring
     ports:
       - "80:80"
     links:
+      - db
+    depends_on:
       - db
     restart: "always"
     networks:
       - backend
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - METRICS_ENDPOINT=/metrics
     deploy:
       replicas: 4
       # update_config:
@@ -42,6 +45,42 @@ services:
     #   test: ["CMD", "sqlcmd", "-U", "sa", "-P", "p@55w0rd", "-Q", "select 1"]
     #   interval: 1s
     #   retries: 20
+  promswarmconnect:
+    image: fn61/promswarmconnect:20200306_0847_50a70f6b
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_URL=unix:///var/run/docker.sock
+      - NETWORK_NAME=minitwit_backend
+    networks:
+      - backend
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  prometheus:
+    image: prom/prometheus
+    depends_on: 
+      - promswarmconnect
+    ports: 
+      - "9090:9090"
+    restart: "always"
+    networks:
+      - backend
+    volumes:
+      - "./prometheusvol/prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana
+    depends_on: 
+      - prometheus
+    ports: 
+      - "3000:3000"
+    restart: "always"
+    networks:
+      - backend
+    
+
 volumes:
   dbvol:
 

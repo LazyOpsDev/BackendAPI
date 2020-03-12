@@ -1,0 +1,83 @@
+ version: 2
+ 
+ workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+  build_and_deliver:
+    jobs:
+      - build_artifact:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - push_artifact:
+          requires:
+            - build_artifact
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
+ jobs:
+  build:
+    working_directory: ~/source
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: dotnet restore API/Solution1.sln
+      - run:
+          name: Build
+          command: dotnet build --configuration Release API/Solution1.sln
+
+  test:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: 'dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj'
+
+  build_artifact:
+    environment:
+      ORG_NAME: lazyopsdev
+      IMAGE_NAME: api
+      DEFAULT_TAG: latest
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: |
+            cd API && docker build -t $IMAGE_NAME .
+            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+
+  push_artifact:
+    environment:
+      ORG_NAME: lazyopsdev
+      IMAGE_NAME: api
+      DEFAULT_TAG: latest
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Publish Docker Image
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+            docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
