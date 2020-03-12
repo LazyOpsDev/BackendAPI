@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   minitwit:
-    image: pkorsholm/api:monitoring
+    image: lazyopsdev/api:latest
     ports:
       - "80:80"
     links:
