@@ -65,3 +65,18 @@ notifications:
     - phko@itu.dk
     - alsb@itu.dk
     - arca@itu.dk
+
+env:
+  global:
+    secure: Bxzegakp99tp3+ZfwmgfAsCgo8oaxnkhY6L0PLAWqjsZ/bXmx9ud1qsbQx4eOz8HoROL89x72O61qXrtZ8+WnAbZxk7E6FCGxdqnsdzmjqTNztRt/uHRCKodOFCqbYB0CwT6Gid85hC8vBGGdDTJCcBDFXlCy6ozGnLMwoPio2+5+n3HWswXDIJpFeW0lorAba0Z4zsQWYXv+mWEeTjAgIMuO3+EvdUyUyYx5ZbFYa6fRKvGNrcS9JLDcCJm/vW2fjRv0RrfrDL0FqnL5xF6y+BirKt9HiHjwmb9SbUpPY3wwSvcmy8ihCeNBRD4T1rl9d63YuDyaNxAuMGpN89E7sCrWSnH7RM7UySWoUzKYGUR2yOijGvtV0XR4CSJLRRYJGfZwQoOfBmarDrnG6klyRM5OTH2l+VFiO8ntPZy0SBTuM6gyoJuKGmfeGKJvHK0yGKEDkUJBM/DVK6gVLXdaFGRE/NIzmPoqQKhjaorC9gBeESRPCahjJWr+xnAFJLZhw3tYzgZ7lMBACiAetoIMxi8g41Kkcs3b/bAlj5BLkjIan+e/0X3ETrrzITf6Y8FFAWY0kdj09KG+40exOu3ut4vDQcUBHvkkpIv71PMHuEYuV8i7Nv9zssiUYaCLVL8l8n/DaiT3LQ05EIFKs4khzrVHrnvG9o/K39p1/8ISkY=
+
+dist: trusty
+addons:
+  sonarcloud:
+    organization: "lazyopsdev"
+    token:
+      secure: "sifBGDoyDCBLu3Ho8H/3+t4sHKQ2qmvDFIZCi5JxTrNxW5eYwvI+qzRnCdg/zDnkbv1kVf7YVIjfFhO362DOMSRaTols+A66TMI4bUubVs6jzUsSxKvCg8qUaFXbD7qsJzKOx5BpHMPiD6ptUr3FfYSQRmQHUsMj4Cqa6fY1A5bBTYMFlM4PjmzWxWYV2NjC0mJPoOp0VnbEC1qn2dMmmTl0df4OJ3zk90rSAAouql3tzVLOPS4JQ/1aspfT0Pbb9of4ORy+4Syv7grp+8KJI0GMonikcyXtbFAGoZdZ011mQ2wArQYjtw1ALCq9cN//6C00GaAnoR09iHUacLomFpIB/cNTbCdiq4ENzxW1ICKnVa8HEQwOfuNULFGrajHS5IbIuHrAJReQj1HFbmVjMINuY6a9PXKvinUyw3RT5wTwRgFoMG7VoBdmWxeTm4pCa2dDt36D/fo/e9O3eOWbohZaVGnYe/DdgdrWZm1hwFgBD/GTjbzJ3sgLLU+Qhxh7kQ1aD6fLlORKH0ShlvDNk5LjLE/nr/KixwCy/qru45yrV6Nb7FL17B+7xrAxUOKNgB0XUSxQ6SizIfOb7wFLNtZF/GT0SdlYYpYmqNnUmscBAUcoL8cEzh9nI0HsPsGmXXgOykXHJGwn1Yx3aA7hJOKSlB2Cz3Ar7+DB0eHHNK4=" # encrypted value of your token
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - sonar-scanner
