@@ -14,7 +14,7 @@ namespace Minitwit.API.Controllers
         private readonly ITimelineRepository _timelineRepository;
         private readonly ILogger _logger;
 
-        public TimelineController(ITimelineRepository timelineRepository, ILogger logger)
+        public TimelineController(ITimelineRepository timelineRepository, ILogger<TimelineController> logger)
         {
             _timelineRepository = timelineRepository;
             _logger = logger;
