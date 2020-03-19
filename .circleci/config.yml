@@ -8,7 +8,7 @@
   #     - test:
   #         requires:
   #           - build
-  deliver:
+  deliver_and_deploy:
     jobs:
       - build_and_deliver:
           filters:
@@ -89,5 +89,10 @@
       - run:
           name: Deploy Application
           command: |
-            scp -o "StrictHostKeyChecking no" API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
-            ssh -o "StrictHostKeyChecking no" ${SERVER_USER}@${SERVER_IP} ls -la
+            # Update docker compose file:
+            # scp -o "StrictHostKeyChecking no" API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
+            scp -o "StrictHostKeyChecking no" deploy.bash ${SERVER_USER}@${SERVER_IP}:~/deploy.bash
+            ssh -o "StrictHostKeyChecking no" ${SERVER_USER}@${SERVER_IP} \
+              "source /root/.bashrc && \
+              ./deploy.bash"
+
