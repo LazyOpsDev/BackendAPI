@@ -65,11 +65,11 @@
       - run:
           name: Save Docker layer cache
           command: |
-            mkdir -p /caches
-            docker save /caches/app.tar
+            mkdir -p $HOME/docker-caches
+            docker save -o $HOME/docker-caches/app.tar $IMAGE_NAME
       - save_cache:
           paths:
-            - /caches/app.tar
+            - $HOME/docker-caches
           key: v-{{ .Branch }}-{{ epoch }}
 
   push_artifact:
@@ -86,12 +86,12 @@
           keys:
             - v-{{ .Branch }}
           paths:
-            - /caches/app.tar
+            - $HOME/docker-caches/app.tar
       - run:
           name: Load Docker image layer cache
           command: |
             set +o pipefail
-            docker load -i /caches/app.tar | true
+            docker load -i $HOME/docker-caches/app.tar | true
       - deploy:
           name: Publish Docker Image
           command: |
