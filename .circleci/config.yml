@@ -8,7 +8,7 @@
   #     - test:
   #         requires:
   #           - build
-  deliver:
+  deliver_and_deploy:
     jobs:
       - build_and_deliver:
           filters:
@@ -94,5 +94,5 @@
             scp -o "StrictHostKeyChecking no" deploy.bash ${SERVER_USER}@${SERVER_IP}:~/deploy.bash
             ssh -o "StrictHostKeyChecking no" ${SERVER_USER}@${SERVER_IP} \
               "source /root/.bashrc && \
-              ./deploy.bash
+              ./deploy.bash"
 
