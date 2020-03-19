@@ -1,5 +1,8 @@
 # BackendAPI
-[![Build Status](https://travis-ci.org/LazyOpsDev/Minitwit.Backend.svg?branch=develop)](https://travis-ci.org/LazyOpsDev/Minitwit.Backend)<br><br>
+[![Build Status](https://travis-ci.org/LazyOpsDev/Minitwit.Backend.svg?branch=develop)](https://travis-ci.org/LazyOpsDev/Minitwit.Backend) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=LazyOpsDev_Minitwit.Backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=LazyOpsDev_Minitwit.Backend)
+
+<br><br>
+
 BackendAPI for Minitwit
 
 ## Deployment
