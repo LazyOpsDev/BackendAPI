@@ -62,8 +62,15 @@
           name: Build Docker Image
           command: |
             cd API && docker build -t $IMAGE_NAME .
-            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
-            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+      - run:
+          name: Save Docker layer cache
+          command: |
+            mkdir -p /caches
+            docker save /caches/app.tar
+      - save_cache:
+          paths:
+            - /caches/app.tar
+          key: v-{{ .Branch }}-{{ epoch }}
 
   push_artifact:
     environment:
@@ -75,9 +82,21 @@
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v-{{ .Branch }}
+          paths:
+            - /caches/app.tar
       - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - deploy:
           name: Publish Docker Image
           command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
             docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
             docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
