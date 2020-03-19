@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Minitwit.API.Util;
 using System;
 using System.Threading.Tasks;
@@ -11,10 +12,12 @@ namespace Minitwit.API.Controllers
     public class TimelineController : ControllerBase
     {
         private readonly ITimelineRepository _timelineRepository;
+        private readonly ILogger _logger;
 
-        public TimelineController(ITimelineRepository timelineRepository)
+        public TimelineController(ITimelineRepository timelineRepository, ILogger logger)
         {
             _timelineRepository = timelineRepository;
+            _logger = logger;
         }
         
         // GET: api/Timeline
@@ -35,6 +38,7 @@ namespace Minitwit.API.Controllers
         [Route("/")]
         public async Task<IActionResult> Public()
         {
+            _logger.LogInformation("Fetched public timeline");
             //Return all messages by all users
             return new OkObjectResult( _timelineRepository.GetPublicTimeline());
         }
