@@ -1,0 +1,98 @@
+ version: 2
+ 
+ workflows:
+  version: 2
+  # build_and_test:
+  #   jobs:
+  #     - build
+  #     - test:
+  #         requires:
+  #           - build
+  deliver_and_deploy:
+    jobs:
+      - build_and_deliver:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - deploy_artifact:
+          requires:
+            - build_and_deliver
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
+ jobs:
+  # build:
+  #   working_directory: ~/source
+  #   docker:
+  #     - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install
+  #         command: dotnet restore API/Solution1.sln
+  #     - run:
+  #         name: Build
+  #         command: dotnet build --configuration Release API/Solution1.sln
+
+  # test:
+  #   docker:
+  #     - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Test
+  #         command: 'dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj'
+
+  build_and_deliver:
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: |
+            cd API && docker build -t $IMAGE_NAME .
+      - run:
+          name: Push Docker Image
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+            docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+            docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+            docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+
+      ## Caching example:
+      # - run:
+      #     name: Save Docker layer cache
+      #     command: |
+      #       mkdir -p /home/circleci/docker-caches
+      #       docker save -o /home/circleci/docker-caches/app.tar $IMAGE_NAME
+      # - save_cache:
+      #     paths:
+      #       - /home/circleci/docker-caches
+      #     key: v-{{ .Environment.CIRCLE_TAG }}
+
+  deploy_artifact:
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "2d:7b:a2:7f:a0:1e:8e:a5:a4:d6:42:04:ef:bb:4e:79"
+      - run:
+          name: Deploy Application
+          command: |
+            # Update docker compose file:
+            # scp -o "StrictHostKeyChecking no" API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
+            scp -o "StrictHostKeyChecking no" deploy.bash ${SERVER_USER}@${SERVER_IP}:~/deploy.bash
+            ssh -o "StrictHostKeyChecking no" ${SERVER_USER}@${SERVER_IP} \
+              "source /root/.bashrc && \
+              ./deploy.bash"
+
