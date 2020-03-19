@@ -8,22 +8,22 @@
   #     - test:
   #         requires:
   #           - build
-  build_and_deliver:
+  deliver:
     jobs:
-      - build_artifact:
+      - build_and_deliver:
           filters:
             tags:
               only: /.*/
             branches:
               ignore: /.*/
-      - push_artifact:
-          requires:
-            - build_artifact
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
+      # - push_artifact:
+      #     requires:
+      #       - build_artifact
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore: /.*/
 
  jobs:
   # build:
@@ -48,7 +48,7 @@
   #         name: Test
   #         command: 'dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj'
 
-  build_artifact:
+  build_and_deliver:
     environment:
       ORG_NAME: lazyopsdev
       IMAGE_NAME: api
@@ -63,40 +63,49 @@
           command: |
             cd API && docker build -t $IMAGE_NAME .
       - run:
-          name: Save Docker layer cache
-          command: |
-            mkdir -p docker-caches
-            docker save -o docker-caches/app.tar $IMAGE_NAME
-      - save_cache:
-          paths:
-            - docker-caches
-          key: v-{{ .Environment.CIRCLE_TAG }}
-
-  push_artifact:
-    environment:
-      ORG_NAME: lazyopsdev
-      IMAGE_NAME: api
-      DEFAULT_TAG: latest
-    docker:
-      - image: circleci/buildpack-deps:bionic
-    steps:
-      - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v-{{ .Environment.CIRCLE_TAG }}
-          # paths:
-            # - $HOME/docker-caches
-      - run:
-          name: Load Docker image layer cache
-          command: |
-            set +o pipefail
-            docker load -i docker-caches/app.tar | true
-      - deploy:
-          name: Publish Docker Image
+          name: Push Docker Image
           command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
             docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
             docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
             docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+            
+      # - run:
+      #     name: Save Docker layer cache
+      #     command: |
+      #       mkdir -p /home/circleci/docker-caches
+      #       docker save -o /home/circleci/docker-caches/app.tar $IMAGE_NAME
+      # - save_cache:
+      #     paths:
+      #       - /home/circleci/docker-caches
+      #     key: v-{{ .Environment.CIRCLE_TAG }}
+
+  # push_artifact:
+  #   environment:
+  #     ORG_NAME: lazyopsdev
+  #     IMAGE_NAME: api
+  #     DEFAULT_TAG: latest
+  #   docker:
+  #     - image: circleci/buildpack-deps:bionic
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - restore_cache:
+  #         keys:
+  #           - v-{{ .Environment.CIRCLE_TAG }}
+  #         # paths:
+  #           # - $HOME/docker-caches
+  #     - run:
+  #         name: Load Docker image layer cache
+  #         command: |
+  #           set +o pipefail
+  #           docker load -i /home/circleci/docker-caches/app.tar | true
+  #     - deploy:
+  #         name: Publish Docker Image
+  #         command: |
+  #           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  #           docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+  #           docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+  #           docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
+  #           docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
