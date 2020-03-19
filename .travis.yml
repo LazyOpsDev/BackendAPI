@@ -10,9 +10,20 @@ branches:
   except:
     - master
 
+addons:
+  sonarcloud:
+    organization: "lazyopsdev"
+    token:
+      secure: "sifBGDoyDCBLu3Ho8H/3+t4sHKQ2qmvDFIZCi5JxTrNxW5eYwvI+qzRnCdg/zDnkbv1kVf7YVIjfFhO362DOMSRaTols+A66TMI4bUubVs6jzUsSxKvCg8qUaFXbD7qsJzKOx5BpHMPiD6ptUr3FfYSQRmQHUsMj4Cqa6fY1A5bBTYMFlM4PjmzWxWYV2NjC0mJPoOp0VnbEC1qn2dMmmTl0df4OJ3zk90rSAAouql3tzVLOPS4JQ/1aspfT0Pbb9of4ORy+4Syv7grp+8KJI0GMonikcyXtbFAGoZdZ011mQ2wArQYjtw1ALCq9cN//6C00GaAnoR09iHUacLomFpIB/cNTbCdiq4ENzxW1ICKnVa8HEQwOfuNULFGrajHS5IbIuHrAJReQj1HFbmVjMINuY6a9PXKvinUyw3RT5wTwRgFoMG7VoBdmWxeTm4pCa2dDt36D/fo/e9O3eOWbohZaVGnYe/DdgdrWZm1hwFgBD/GTjbzJ3sgLLU+Qhxh7kQ1aD6fLlORKH0ShlvDNk5LjLE/nr/KixwCy/qru45yrV6Nb7FL17B+7xrAxUOKNgB0XUSxQ6SizIfOb7wFLNtZF/GT0SdlYYpYmqNnUmscBAUcoL8cEzh9nI0HsPsGmXXgOykXHJGwn1Yx3aA7hJOKSlB2Cz3Ar7+DB0eHHNK4=" # encrypted value of your token
+
 jobs:
   include:
     # Build and run tests
+    - stage: analysis
+      name: "Analysis Code"
+      script:
+        - sonar-scanner
+
     - stage: build
       name: "Build Solution"
       script: 
