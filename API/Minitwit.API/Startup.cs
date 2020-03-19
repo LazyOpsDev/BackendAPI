@@ -13,6 +13,9 @@ using Minitwit.DataAccessLayer;
 using MySql.Data.MySqlClient;
 using Prometheus;
 using Repository;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 namespace Minitwit.API
 {
@@ -26,6 +29,15 @@ namespace Minitwit.API
                 .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            var elasticUri = Configuration["ElasticConfiguration:Uri"];
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                })
+            .CreateLogger();
         }
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -36,17 +48,17 @@ namespace Minitwit.API
         {
             var connString = Configuration["ConnectionString"];
             //connString = "Server=localhost;Database=minitwit;Uid=root;Pwd=hej123;";
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddFilter("Microsoft", LogLevel.Warning)
-                    .AddFilter("System", LogLevel.Warning)
-                    .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
-                    .AddConsole();
-            });
+            // var loggerFactory = LoggerFactory.Create(builder =>
+            // {
+            //     builder
+            //         .AddFilter("Microsoft", LogLevel.Warning)
+            //         .AddFilter("System", LogLevel.Warning)
+            //         .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+            //         .AddConsole();
+            // });
 
-            ILogger logger = loggerFactory.CreateLogger<Program>();
-            logger.LogError(connString);
+            // ILogger logger = loggerFactory.CreateLogger<Program>();
+            // logger.LogError(connString);
             WaitForDBInit(connString);
             services.AddControllers();
 
@@ -67,7 +79,7 @@ namespace Minitwit.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomDbContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomDbContext context, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -95,6 +107,8 @@ namespace Minitwit.API
                 endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
                 endpoints.MapMetrics();
             });
+
+            loggerFactory.AddSerilog();
         }
 
         private void WaitForDBInit(string connectionString, Microsoft.Extensions.Hosting.IHostApplicationLifetime lifetime = null)
