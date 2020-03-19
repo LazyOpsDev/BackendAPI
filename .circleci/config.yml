@@ -89,5 +89,5 @@
       - run:
           name: Deploy Application
           command: |
-            scp API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
-            ssh ${SERVER_USER}@${SERVER_IP} ls -la
+            scp -o "StrictHostKeyChecking no" API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
+            ssh -o "StrictHostKeyChecking no" ${SERVER_USER}@${SERVER_IP} ls -la
