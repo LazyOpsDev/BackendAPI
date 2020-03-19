@@ -16,14 +16,14 @@
               only: /.*/
             branches:
               ignore: /.*/
-      # - push_artifact:
-      #     requires:
-      #       - build_artifact
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      #       branches:
-      #         ignore: /.*/
+      - deploy_artifact:
+          requires:
+            - build_and_deliver
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
 
  jobs:
   # build:
@@ -49,10 +49,6 @@
   #         command: 'dotnet test API/Minitwit.Tests/Minitwit.Tests.csproj'
 
   build_and_deliver:
-    environment:
-      ORG_NAME: lazyopsdev
-      IMAGE_NAME: api
-      DEFAULT_TAG: latest
     docker:
       - image: circleci/buildpack-deps:bionic
     steps:
@@ -70,7 +66,8 @@
             docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
             docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
             docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
-            
+
+      ## Caching example:
       # - run:
       #     name: Save Docker layer cache
       #     command: |
@@ -81,31 +78,16 @@
       #       - /home/circleci/docker-caches
       #     key: v-{{ .Environment.CIRCLE_TAG }}
 
-  # push_artifact:
-  #   environment:
-  #     ORG_NAME: lazyopsdev
-  #     IMAGE_NAME: api
-  #     DEFAULT_TAG: latest
-  #   docker:
-  #     - image: circleci/buildpack-deps:bionic
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker
-  #     - restore_cache:
-  #         keys:
-  #           - v-{{ .Environment.CIRCLE_TAG }}
-  #         # paths:
-  #           # - $HOME/docker-caches
-  #     - run:
-  #         name: Load Docker image layer cache
-  #         command: |
-  #           set +o pipefail
-  #           docker load -i /home/circleci/docker-caches/app.tar | true
-  #     - deploy:
-  #         name: Publish Docker Image
-  #         command: |
-  #           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  #           docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
-  #           docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
-  #           docker push "$ORG_NAME/$IMAGE_NAME:$CIRCLE_TAG"
-  #           docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_TAG"
+  deploy_artifact:
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "2d:7b:a2:7f:a0:1e:8e:a5:a4:d6:42:04:ef:bb:4e:79"
+      - run:
+          name: Deploy Application
+          command: |
+            scp API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
+            ssh ${SERVER_USER}@${SERVER_IP} ls -la
