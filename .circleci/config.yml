@@ -70,7 +70,7 @@
       - save_cache:
           paths:
             - $HOME/docker-caches
-          key: v-{{ .Branch }}-{{ epoch }}
+          key: v-{{ .Environment.CIRCLE_TAG }}
 
   push_artifact:
     environment:
@@ -84,9 +84,9 @@
       - setup_remote_docker
       - restore_cache:
           keys:
-            - v-{{ .Branch }}
+            - v-{{ .Environment.CIRCLE_TAG }}
           paths:
-            - $HOME/docker-caches/app.tar
+            - $HOME/docker-caches
       - run:
           name: Load Docker image layer cache
           command: |
