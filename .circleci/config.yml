@@ -85,8 +85,8 @@
       - restore_cache:
           keys:
             - v-{{ .Environment.CIRCLE_TAG }}
-          paths:
-            - $HOME/docker-caches
+          # paths:
+            # - $HOME/docker-caches
       - run:
           name: Load Docker image layer cache
           command: |
