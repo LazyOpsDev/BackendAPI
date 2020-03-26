@@ -37,20 +37,20 @@ jobs:
         - echo "Test"
 
     # Build docker image and push to dockerhub:
-    - stage: deliver
-      if: tag IS present
-      name: Upload docker image
-      env:
-        - ORG_NAME=lazyopsdev
-        - IMAGE_NAME=api
-        - DEFAULT_DOCKER_TAG=latest
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - cd API && docker build -t $IMAGE_NAME .
-        - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
-        - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
-        - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
-        - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+    # - stage: deliver
+    #   if: tag IS present
+    #   name: Upload docker image
+    #   env:
+    #     - ORG_NAME=lazyopsdev
+    #     - IMAGE_NAME=api
+    #     - DEFAULT_DOCKER_TAG=latest
+    #   script:
+    #     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    #     - cd API && docker build -t $IMAGE_NAME .
+    #     - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
+    #     - docker tag $IMAGE_NAME "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
+    #     - docker push "$ORG_NAME/$IMAGE_NAME:$TRAVIS_TAG"
+    #     - docker push "$ORG_NAME/$IMAGE_NAME:$DEFAULT_DOCKER_TAG"
 
     # GitHub auto merge to master:
     - stage: auto-merge
