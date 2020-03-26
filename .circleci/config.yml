@@ -85,7 +85,7 @@
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "2d:7b:a2:7f:a0:1e:8e:a5:a4:d6:42:04:ef:bb:4e:79"
+            - "af:ba:8c:dc:ed:b1:80:2e:6b:c7:72:74:2f:3a:1c:40"
       - run:
           name: Deploy Application
           command: |
