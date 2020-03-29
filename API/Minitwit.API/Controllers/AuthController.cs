@@ -30,8 +30,6 @@ namespace Minitwit.API.Controllers
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login(LoginModel model) {
-            if (CookieHandler.LoggedIn(Request) && Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-                return RedirectToAction("Root", "Timeline");
             if (!ModelState.IsValid)
                 return Unauthorized();
 
@@ -53,9 +51,6 @@ namespace Minitwit.API.Controllers
         public async Task<IActionResult> Register([FromBody]RegisterModel model) {
             if (!ModelState.IsValid)
                 return Unauthorized();
-
-            if (CookieHandler.LoggedIn(Request) && Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-                return RedirectToAction("Root", "Timeline");
 
             try
             {

@@ -27,8 +27,4 @@ namespace Minitwit.API.Controllers
             return new OkObjectResult(new { latest=  _lastNumberRepository.ReadLatest() });
         }
     }
-    //public class latestModel
-    //{
-    //    public int latest { get; set; }
-    //}
 }
