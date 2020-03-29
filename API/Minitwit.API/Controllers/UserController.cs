@@ -25,8 +25,9 @@ namespace Minitwit.API.Controllers
         {
             //TODO maybe auth
             //If user not logged in 
-            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-            //    return Unauthorized();
+            if (!CookieHandler.LoggedIn(Request) &&
+                !(Request.Headers.TryGetValue("Authorization", out var header) && header.Equals(AuthorizationConstants.terribleHackAuth)))
+                return Unauthorized();
 
             if (string.IsNullOrEmpty(follow.follow))
             {
