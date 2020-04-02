@@ -9,8 +9,35 @@ install:
 branches:
   except:
     - master
-
+env:
+  global:
+    # COVERITY_SCAN_TOKEN
+    # ** specific to your project **
+    - secure: "qpysLW8L9z2ORHXKxPMcrLqY+xWR+zcupSowG8Z1bxgXqwPDbInXjX+zHIA6tubPf6o5QNr++QBj9udue5moXXx0BcLk5OkKsVgNDYfl2p7X5PXwwp3/HEkQFpoWA89zKxhm1PFy419nI7IsEVnX1kb2FKgBlV+VWe2Sy5fVmQ1SK/DMn3yIBjCWF/ob/RZrCPpPk7zYROHJwfmXdQRLmiOI9XfdrgxhGHiONtGp3JTb9aNIvyuPh0cG0fqt6PPnZOCzMBE+f2/ggRt3wcDuyOizGRfSo/86GgxtQFzV6G9JzV6KuBZWmykOQWk+1z+AkcStnn1zo8GtpIgsv8xyrLRDHHe/9XMQ3+jp65/cBJKFX+N15VCSvb17ucmfbzTkTAABLwXbo1VBR+LgaMkmzcysqqGIhzn5bFPzeofvx0ukTx58BOv1kFduZxRrNiHqTb2Tew/FB9RJT1QwS0yiXXq+PV+kRCJCGmq0aj+/AYOEevsLbx/NQgJXMOA8eYld5AZDkZ4If3Q1jKwTYmhI8h2SwjomleCdgunKxFH5E9g0f6v0V6KuaZXbVxm3m4OfrUrk40gVjljtCpixNA9gqWvpYe8mqWaL5BVgpY6ine8uC/ipNX62x93Jqp/NSrYCtXoUbQh2kQe3gNmHmgWLJFQewXSUc7Vg5I9A34VpurU="
+  
 addons:
+  coverity_scan:
+    project:
+      name: LazyOpsDev/Minitwit.Backend
+      version: 1.0
+      description: My Project
+
+    # Where email notification of build analysis results will be sent
+    notification_email: lazyopsdev@gmail.com
+
+    # Commands to prepare for build_command
+    # ** likely specific to your build **
+    build_command_prepend: echo "configure"
+
+    # The command that will be added as an argument to "cov-build" to compile your project for analysis,
+    # ** likely specific to your build **
+    build_command: dotnet build
+
+    # Pattern to match selecting branches that will run analysis. We recommend leaving this set to 'coverity_scan'.
+    # Take care in resource usage, and consider the build frequency allowances per
+    #   https://scan.coverity.com/faq#frequency
+    branch_pattern: coverity_scan
+    
   sonarcloud:
     organization: "lazyopsdev"
     token:
