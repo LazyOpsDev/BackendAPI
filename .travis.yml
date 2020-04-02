@@ -17,11 +17,7 @@ addons:
 jobs:
   include:
     # Build and run tests
-    - stage: analysis
-      name: "Analysis Code"
-      script:
-        - sonar-scanner
-
+   
     - stage: build
       name: "Build Solution"
       script: 
@@ -67,6 +63,10 @@ jobs:
         - git merge --no-ff "$TRAVIS_COMMIT" || exit
         - git remote add travis-origin https://${GITHUB_USER_NAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPO_URI}.git > /dev/null 2>&1
         - git push --quiet --set-upstream travis-origin master
+  - stage: analysis
+      name: "Analysis Code"
+      script:
+        - sonar-scanner
 
 notifications:
   email:
