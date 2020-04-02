@@ -58,11 +58,12 @@ jobs:
         - git config --global user.email "$GITHUB_USER_EMAIL"
         - git config --global user.name "$GITHUB_USER_NAME"
         - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* || exit
-        - git fetch --all || exit
+        - git fetch --unshallow || exit
         - git checkout master || exit
         - git merge --no-ff "$TRAVIS_COMMIT" || exit
         - git remote add travis-origin https://${GITHUB_USER_NAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPO_URI}.git > /dev/null 2>&1
         - git push --quiet --set-upstream travis-origin master
+    
     - stage: analysis
       name: "Analysis Code"
       script:
