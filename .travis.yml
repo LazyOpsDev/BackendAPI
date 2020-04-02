@@ -1,5 +1,6 @@
 language: csharp
 mono: none
+dist:
 dotnet: 3.1.100
 services:
   - docker
@@ -67,7 +68,7 @@ jobs:
     - stage: analysis
       name: "Analysis Code"
       script:
-        - sonar-scanner
+        - sonar-scanner -X
 
 notifications:
   email:
