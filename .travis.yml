@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-
+dist:
 dotnet: 3.1.100
 services:
   - docker
@@ -14,16 +14,11 @@ addons:
   sonarcloud:
     organization: "lazyopsdev"
     token:
-      secure: "sifBGDoyDCBLu3Ho8H/3+t4sHKQ2qmvDFIZCi5JxTrNxW5eYwvI+qzRnCdg/zDnkbv1kVf7YVIjfFhO362DOMSRaTols+A66TMI4bUubVs6jzUsSxKvCg8qUaFXbD7qsJzKOx5BpHMPiD6ptUr3FfYSQRmQHUsMj4Cqa6fY1A5bBTYMFlM4PjmzWxWYV2NjC0mJPoOp0VnbEC1qn2dMmmTl0df4OJ3zk90rSAAouql3tzVLOPS4JQ/1aspfT0Pbb9of4ORy+4Syv7grp+8KJI0GMonikcyXtbFAGoZdZ011mQ2wArQYjtw1ALCq9cN//6C00GaAnoR09iHUacLomFpIB/cNTbCdiq4ENzxW1ICKnVa8HEQwOfuNULFGrajHS5IbIuHrAJReQj1HFbmVjMINuY6a9PXKvinUyw3RT5wTwRgFoMG7VoBdmWxeTm4pCa2dDt36D/fo/e9O3eOWbohZaVGnYe/DdgdrWZm1hwFgBD/GTjbzJ3sgLLU+Qhxh7kQ1aD6fLlORKH0ShlvDNk5LjLE/nr/KixwCy/qru45yrV6Nb7FL17B+7xrAxUOKNgB0XUSxQ6SizIfOb7wFLNtZF/GT0SdlYYpYmqNnUmscBAUcoL8cEzh9nI0HsPsGmXXgOykXHJGwn1Yx3aA7hJOKSlB2Cz3Ar7+DB0eHHNK4=" # encrypted value of your token
-
+      secure: "pMUyXC4EPjSBxSVtphWeIJFvc3rH7A6n5JWcYN2gdGtz27M3tC+Dkv2/c/8D+4qadYMAjkP0VVM0seslkOYe7zerdfUrT8UxWGNjPZzjdZQEz+rccbJwxJeGvXm42+AUt3eopkQOcO4ZwbUZmkdTFQmM/4CXKdmBMgx+nxdbE59wIO/pxQoI9oRdnoGfNbJSVumvOBfph8QCAH0U+gXyogqMEFSKTCyfO+Q64xuGJYCZ+VVjWdQimo3e6RWzVw8tViSVMU/NMAlbXMrZeZdt4Ab+CzzFXpIsdxLMO6bhY9GUK9RmCvZhGSXzNgd5hRpu+CoQHL961zc9gPk7yEcuYRz8kUYuoNK/m5hN3xJx03k7wwEb+D8qMDke6kSXLJNJVk7o+Ej0pPmR74whXswqgZBrQeZThyt29VdytxEGLhAOCHaaq70T4bAq6XKl1qCDm7OZRfzIfL+tvHOpPQK1nsxKhPOpWcAc1ctxneV29iCtSxGQHv2WqnxSdZ0OfU8anvXXZR7UhkIGRt7LPUpunkXiLfHEnTnXCKdgwuwKRohqCyp+0efCYl7DHHxJv9GXS/h8AaBrraoVnX3+QHOxV7DMa0+sfEK1pvSuMuuQBaIHFla/8tYcTlX0j/brGE9//umbsQkdZOAekwXbvMIspkfM12NG+0nBI2h6TH0oHR4="
 jobs:
   include:
     # Build and run tests
-    - stage: analysis
-      name: "Analysis Code"
-      script:
-        - sonar-scanner
-
+   
     - stage: build
       name: "Build Solution"
       script: 
@@ -64,11 +59,16 @@ jobs:
         - git config --global user.email "$GITHUB_USER_EMAIL"
         - git config --global user.name "$GITHUB_USER_NAME"
         - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* || exit
-        - git fetch --all || exit
+        - git fetch --unshallow || exit
         - git checkout master || exit
         - git merge --no-ff "$TRAVIS_COMMIT" || exit
         - git remote add travis-origin https://${GITHUB_USER_NAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPO_URI}.git > /dev/null 2>&1
         - git push --quiet --set-upstream travis-origin master
+    
+    - stage: analysis
+      name: "Analysis Code"
+      script:
+        - sonar-scanner -X
 
 notifications:
   email:
