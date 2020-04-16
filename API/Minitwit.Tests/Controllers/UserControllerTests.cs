@@ -18,13 +18,14 @@ namespace Minitwit.Tests.Controllers
         public async Task FllwsRejectsUnauthorizedRequestsWith401Error()
         {
             var userRepositoryMock = new Mock<IUserRepository>();
+            var loggerMock = new Mock<ILogger<UserController>>();
             var httpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext(); // or mock a `HttpContext`
             var controllerContext = new ControllerContext()
             {
                 HttpContext = httpContext,
             };
 
-            var controller = new UserController(userRepositoryMock.Object) { ControllerContext = controllerContext };
+            var controller = new UserController(userRepositoryMock.Object, loggerMock.Object) { ControllerContext = controllerContext };
 
             var res = await controller.fllws(new followModel(), "John Doe");
 
@@ -35,6 +36,7 @@ namespace Minitwit.Tests.Controllers
         public async Task FllwsExecutesRequestMadeWithSimulatorHeader()
         {
             var userRepositoryMock = new Mock<IUserRepository>();
+            var loggerMock = new Mock<ILogger<UserController>>();
             var httpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext(); // or mock a `HttpContext`
             httpContext.Request.Headers["Authorization"] = AuthorizationConstants.terribleHackAuth;
             var controllerContext = new ControllerContext()
@@ -42,7 +44,7 @@ namespace Minitwit.Tests.Controllers
                 HttpContext = httpContext,
             };
 
-            var controller = new UserController(userRepositoryMock.Object) { ControllerContext = controllerContext };
+            var controller = new UserController(userRepositoryMock.Object, loggerMock.Object) { ControllerContext = controllerContext };
 
             var res = await controller.fllws(new followModel(), "John Doe");
 
