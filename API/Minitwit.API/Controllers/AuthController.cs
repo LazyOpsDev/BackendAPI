@@ -33,8 +33,6 @@ namespace Minitwit.API.Controllers
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login(LoginModel model) {
-            if (CookieHandler.LoggedIn(Request) && Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-                return RedirectToAction("Root", "Timeline");
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Unauthorized login attempt via LoginModel: @{model}", model);
@@ -63,9 +61,6 @@ namespace Minitwit.API.Controllers
                 _logger.LogWarning("Unauthorized register attempt via RegisterModel: @{model}", model);
                 return Unauthorized();
             }
-
-            if (CookieHandler.LoggedIn(Request) && Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-                return RedirectToAction("Root", "Timeline");
 
             try
             {

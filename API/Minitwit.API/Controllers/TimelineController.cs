@@ -53,15 +53,16 @@ namespace Minitwit.API.Controllers
             return new OkObjectResult( _timelineRepository.GetUserTimeline(username));
         }
 
-    [LatestFilter]
+        [LatestFilter]
         [HttpPost]
         [HttpGet]
         [Route("msgs/{username}")]
         public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username) {
             //Create a new message from logged in user
             //TODO if user not logged in
-            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-            //    return Unauthorized();
+            if (!CookieHandler.LoggedIn(Request) &&
+                !(Request.Headers.TryGetValue("Authorization", out var header) && header.Equals(AuthorizationConstants.terribleHackAuth)))
+                return Unauthorized();
 
             switch (Request.Method)
             {
