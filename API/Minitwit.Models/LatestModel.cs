@@ -7,6 +7,6 @@ namespace Minitwit.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public int latest{ get; set; }
+        public int latest { get; set; }
     }
 }

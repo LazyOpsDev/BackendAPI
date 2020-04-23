@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Minitwit.API.Util;
-using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
@@ -36,13 +34,13 @@ namespace Minitwit.API.Controllers
             if (string.IsNullOrEmpty(follow.follow))
             {
                 _logger.LogInformation($"User {username} Unfollow user {follow.unfollow}");
-                if (! _userRepository.UnfollowUser(username, follow.unfollow))
+                if (!_userRepository.UnfollowUser(username, follow.unfollow))
                     return NoContent();
             }
             else if (string.IsNullOrEmpty(follow.unfollow))
             {
-                _logger.LogInformation($"User {username} follow user {follow.follow}"); 
-                if (! _userRepository.FollowUser(username, follow.follow))
+                _logger.LogInformation($"User {username} follow user {follow.follow}");
+                if (!_userRepository.FollowUser(username, follow.follow))
                     return NotFound();
             }
             return NoContent();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Interfaces
+﻿namespace Infrastructure.Interfaces
 {
     public interface ILastNumberRepository
     {

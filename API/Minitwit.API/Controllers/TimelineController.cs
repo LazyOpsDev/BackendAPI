@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Minitwit.API.Util;
-using System;
 using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
@@ -19,7 +18,7 @@ namespace Minitwit.API.Controllers
             _timelineRepository = timelineRepository;
             _logger = logger;
         }
-        
+
         // GET: api/Timeline
         //[HttpGet]
         //public async Task<IActionResult> Root()
@@ -33,31 +32,32 @@ namespace Minitwit.API.Controllers
         //    return new OkObjectResult(await _timelineRepository.GetPublicTimeline());
         //}
 
-    [LatestFilter]
+        [LatestFilter]
         [HttpGet]
         [Route("/")]
         public async Task<IActionResult> Public()
         {
             _logger.LogInformation("Fetched public timeline");
             //Return all messages by all users
-            return new OkObjectResult( _timelineRepository.GetPublicTimeline());
+            return new OkObjectResult(_timelineRepository.GetPublicTimeline());
         }
 
-    [LatestFilter]
+        [LatestFilter]
         [HttpGet]
         [Route("{username}")]
         public async Task<IActionResult> UserTimeline(string username)
         {
             _logger.LogInformation($"Fetched user timeline for {username}");
             //Return messages by a single user
-            return new OkObjectResult( _timelineRepository.GetUserTimeline(username));
+            return new OkObjectResult(_timelineRepository.GetUserTimeline(username));
         }
 
         [LatestFilter]
         [HttpPost]
         [HttpGet]
         [Route("msgs/{username}")]
-        public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username) {
+        public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username)
+        {
             //Create a new message from logged in user
             //TODO if user not logged in
             if (!CookieHandler.LoggedIn(Request) &&
@@ -68,7 +68,7 @@ namespace Minitwit.API.Controllers
             {
                 case "POST":
                     _logger.LogInformation($"User: {username} posted msg: {msg.content}");
-                     _timelineRepository.PostMessage(username, msg.content);
+                    _timelineRepository.PostMessage(username, msg.content);
                     return NoContent();
                 case "GET":
                     _logger.LogInformation($"GET request to msgs/{username} - This end point should not be called... Typically?");
@@ -76,7 +76,7 @@ namespace Minitwit.API.Controllers
                     return NoContent();
             }
 
-            
+
             return NoContent();
         }
 

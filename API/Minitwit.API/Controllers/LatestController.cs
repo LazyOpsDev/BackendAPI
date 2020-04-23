@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Minitwit.API.Util;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,7 +24,7 @@ namespace Minitwit.API.Controllers
         public async Task<IActionResult> Get()
         {
             _logger.LogInformation("Fetched latest endpoint");
-            return new OkObjectResult(new { latest=  _lastNumberRepository.ReadLatest() });
+            return new OkObjectResult(new { latest = _lastNumberRepository.ReadLatest() });
         }
     }
 }

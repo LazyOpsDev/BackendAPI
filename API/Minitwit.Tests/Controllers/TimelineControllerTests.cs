@@ -4,9 +4,6 @@ using Microsoft.Extensions.Logging;
 using Minitwit.API.Controllers;
 using Minitwit.API.Util;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

@@ -1,6 +1,4 @@
-﻿using Minitwit.Models;
-using System;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Infrastructure.Interfaces
 {
