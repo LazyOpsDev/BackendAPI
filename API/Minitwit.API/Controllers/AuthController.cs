@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Infrastructure;
+﻿using Infrastructure;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Minitwit.API.Util;
-using Minitwit.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace Minitwit.API.Controllers
 {
@@ -32,7 +29,8 @@ namespace Minitwit.API.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login(LoginModel model) {
+        public async Task<IActionResult> Login(LoginModel model)
+        {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Unauthorized login attempt via LoginModel: @{model}", model);
@@ -40,7 +38,7 @@ namespace Minitwit.API.Controllers
             }
 
             var res = _userRepository.Login(model);
-            if(!res.Equals(Guid.Empty))
+            if (!res.Equals(Guid.Empty))
             {
                 _logger.LogInformation($"User {model.Username} logged in succesfully");
                 var options = new CookieOptions();
@@ -55,7 +53,8 @@ namespace Minitwit.API.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody]RegisterModel model) {
+        public async Task<IActionResult> Register([FromBody]RegisterModel model)
+        {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Unauthorized register attempt via RegisterModel: @{model}", model);
@@ -72,7 +71,8 @@ namespace Minitwit.API.Controllers
                 HttpContext.Response.Cookies.Append("userId", res.ToString(), options);
                 //return RedirectToAction("Root", "Timeline");
 
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 _logger.LogError(e, "Some error occured.");
             }
@@ -82,7 +82,8 @@ namespace Minitwit.API.Controllers
 
         [HttpPost]
         [Route("logout")]
-        public async Task<IActionResult> Logout() {
+        public async Task<IActionResult> Logout()
+        {
             HttpContext.Response.Cookies.Delete("user");
             HttpContext.Response.Cookies.Delete("userId");
             _logger.LogInformation("User logged out...");

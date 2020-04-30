@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using Autofac;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,9 +10,10 @@ using Minitwit.DataAccessLayer;
 using MySql.Data.MySqlClient;
 using Prometheus;
 using Repository;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using System;
+using System.Threading;
 
 namespace Minitwit.API
 {
