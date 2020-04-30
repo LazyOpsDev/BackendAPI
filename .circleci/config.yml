@@ -90,7 +90,7 @@
           name: Deploy Application
           command: |
             # Update docker compose file:
-            # scp -o "StrictHostKeyChecking no" API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
+            scp -o "StrictHostKeyChecking no" API/docker-compose.yml ${SERVER_USER}@${SERVER_IP}:~/docker-compose.yml
             scp -o "StrictHostKeyChecking no" deploy.bash ${SERVER_USER}@${SERVER_IP}:~/deploy.bash
             ssh -o "StrictHostKeyChecking no" ${SERVER_USER}@${SERVER_IP} \
               "source /root/.bashrc && \

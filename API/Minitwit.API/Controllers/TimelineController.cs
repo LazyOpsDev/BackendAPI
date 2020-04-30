@@ -48,27 +48,31 @@ namespace Minitwit.API.Controllers
         [Route("{username}")]
         public async Task<IActionResult> UserTimeline(string username)
         {
+            _logger.LogInformation($"Fetched user timeline for {username}");
             //Return messages by a single user
             return new OkObjectResult( _timelineRepository.GetUserTimeline(username));
         }
 
-    [LatestFilter]
+        [LatestFilter]
         [HttpPost]
         [HttpGet]
         [Route("msgs/{username}")]
         public async Task<IActionResult> AddMessage([FromBody]MessageCreate msg, string username) {
             //Create a new message from logged in user
             //TODO if user not logged in
-            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-            //    return Unauthorized();
+            if (!CookieHandler.LoggedIn(Request) &&
+                !(Request.Headers.TryGetValue("Authorization", out var header) && header.Equals(AuthorizationConstants.terribleHackAuth)))
+                return Unauthorized();
 
             switch (Request.Method)
             {
                 case "POST":
+                    _logger.LogInformation($"User: {username} posted msg: {msg.content}");
                      _timelineRepository.PostMessage(username, msg.content);
                     return NoContent();
                 case "GET":
-                     _timelineRepository.GetUserTimeline(username);
+                    _logger.LogInformation($"GET request to msgs/{username} - This end point should not be called... Typically?");
+                    _timelineRepository.GetUserTimeline(username);
                     return NoContent();
             }
 

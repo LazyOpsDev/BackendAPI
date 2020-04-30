@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Minitwit.API.Util;
 using System;
 using System.IO;
@@ -12,10 +13,12 @@ namespace Minitwit.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, ILogger<UserController> logger)
         {
             _userRepository = userRepository;
+            _logger = logger;
         }
 
         [LatestFilter]
@@ -25,16 +28,20 @@ namespace Minitwit.API.Controllers
         {
             //TODO maybe auth
             //If user not logged in 
-            //if (!CookieHandler.LoggedIn(Request) || !Guid.TryParse(Request.Cookies["userId"].ToString(), out var UserId))
-            //    return Unauthorized();
+            if (!CookieHandler.LoggedIn(Request) &&
+                !(Request.Headers.TryGetValue("Authorization", out var header) && header.Equals(AuthorizationConstants.terribleHackAuth)))
+                return Unauthorized();
 
+            // TODO: Figure out this mess :)
             if (string.IsNullOrEmpty(follow.follow))
             {
+                _logger.LogInformation($"User {username} Unfollow user {follow.unfollow}");
                 if (! _userRepository.UnfollowUser(username, follow.unfollow))
                     return NoContent();
             }
             else if (string.IsNullOrEmpty(follow.unfollow))
             {
+                _logger.LogInformation($"User {username} follow user {follow.follow}"); 
                 if (! _userRepository.FollowUser(username, follow.follow))
                     return NotFound();
             }
