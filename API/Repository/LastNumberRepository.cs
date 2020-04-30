@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Interfaces;
 using Minitwit.DataAccessLayer;
+using System.Linq;
 
 namespace Repository
 {
@@ -20,8 +17,8 @@ namespace Repository
         {
             //using (var _context = new CustomDbContext())
             //{
-                var r = _context.Latest.FirstOrDefault();
-                return r?.latest ?? 0;
+            var r = _context.Latest.FirstOrDefault();
+            return r?.latest ?? 0;
             //}
         }
 
@@ -29,16 +26,16 @@ namespace Repository
         {
             //using (var _context = new CustomDbContext())
             //{
-                var r = _context.Latest.FirstOrDefault();
-                if (r == null)
-                {
-                    _context.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
-                    _context.SaveChanges();
-                    return;
-                }
-                r.latest = i;
-                _context.Update(r);
+            var r = _context.Latest.FirstOrDefault();
+            if (r == null)
+            {
+                _context.Latest.Add(new Minitwit.Models.LatestModel { latest = i });
                 _context.SaveChanges();
+                return;
+            }
+            r.latest = i;
+            _context.Update(r);
+            _context.SaveChanges();
             //}
 
         }

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Minitwit.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Minitwit.DataAccessLayer
 {
@@ -10,9 +8,9 @@ namespace Minitwit.DataAccessLayer
     {
         private DbContextOptionsBuilder<CustomDbContext> options;
         public CustomDbContext(DbContextOptions<CustomDbContext> options)
-            :base (options)
+            : base(options)
         {
-            
+
         }
 
         public DbSet<User> Users { get; set; }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace Minitwit.API.Util
 {
